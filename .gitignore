@@ -1,0 +1,5 @@
+node_modules/*
+.idea
+.rpt2*
+coverage/**
+ontologies/*
