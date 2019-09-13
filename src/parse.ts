@@ -39,7 +39,7 @@ function parseOntology(file: string, ontologyInfo: OntologyInfo): Promise<Indexe
   })
 }
 
-function getClasses(ontologyData: IndexedFormula): OntologyClass[] {
+function getClasses(ontologyData: IndexedFormula,  ontologyInfo: OntologyInfo): OntologyClass[] {
   const getProperty = (st: Statement, prop: NamedNode): SomeTerm[] =>
     ontologyData.match(st.subject, prop).map(s => s.object);
 
@@ -53,10 +53,11 @@ function getClasses(ontologyData: IndexedFormula): OntologyClass[] {
       isDefinedBy: getProperty(property, rdfs("isDefinedBy")),
       seeAlso: getProperty(property, rdfs("seeAlso")),
       subClassOf: getProperty(property, rdfs("subClassOf")).filter(term => term.termType === "NamedNode") as NamedNode[],
+      term: property.subject.value.substring(ontologyInfo.ns.length),
     }))
 }
 
-function getProperties(ontologyData: IndexedFormula): OntologyProperty[] {
+function getProperties(ontologyData: IndexedFormula, ontologyInfo: OntologyInfo): OntologyProperty[] {
   const getProperty = (st: Statement, prop: NamedNode): SomeTerm[] =>
     ontologyData.match(st.subject, prop).map(s => s.object);
 
@@ -70,6 +71,7 @@ function getProperties(ontologyData: IndexedFormula): OntologyProperty[] {
       isDefinedBy: getProperty(property, rdfs("isDefinedBy")),
       seeAlso: getProperty(property, rdfs("seeAlso")),
       domain: getProperty(property, rdfs("domain")).filter(term => term.termType === "NamedNode") as NamedNode[],
+      term: property.subject.value.substring(ontologyInfo.ns.length),
       range: getProperty(property, rdfs("range")).filter(term => term.termType === "NamedNode") as NamedNode[],
     }))
 }
@@ -94,8 +96,8 @@ export function parse(): Promise<Ontology[]> {
           name: ontologyInfo.name,
           ns: new NamedNode(ontologyInfo.ns),
           symbol: ontologyInfo.symbol,
-          classes: getClasses(ontologyData),
-          properties: getProperties(ontologyData),
+          classes: getClasses(ontologyData, ontologyInfo),
+          properties: getProperties(ontologyData, ontologyInfo),
         };
 
         ontologies.push(ontology)

@@ -1,10 +1,95 @@
-import { Project } from "ts-morph"
-import {
-  Ontology,
-  OntologyItem,
-  OntologyItemPropType,
-} from './types'
-import defaults from './defaults.package.json';
+import { Project, StatementStructures, StructureKind, ts, VariableDeclarationKind } from 'ts-morph'
+import { ScriptTarget } from 'typescript/lib/tsserverlibrary'
+import defaults from './defaults.package.json'
+import { Ontology, OntologyItem, OntologyItemPropType } from './types'
+
+// From https://github.com/jonschlinkert/reserved/blob/master/index.js
+const RESERVED_KEYWORDS = [
+  'abstract',
+  'arguments',
+  'boolean',
+  'break',
+  'byte',
+  'case',
+  'catch',
+  'char',
+  'class',
+  'const',
+  'continue',
+  'debugger',
+  'default',
+  'delete',
+  'do',
+  'double',
+  'else',
+  'enum',
+  'eval',
+  'export',
+  'extends',
+  'false',
+  'final',
+  'finally',
+  'float',
+  'for',
+  'function',
+  'goto',
+  'if',
+  'implements',
+  'import',
+  'in',
+  'instanceof',
+  'int',
+  'interface',
+  'let',
+  'long',
+  'native',
+  'new',
+  'null',
+  'package',
+  'private',
+  'protected',
+  'public',
+  'return',
+  'short',
+  'static',
+  'super',
+  'switch',
+  'synchronized',
+  'this',
+  'throw',
+  'throws',
+  'transient',
+  'true',
+  'try',
+  'typeof',
+  'var',
+  'void',
+  'volatile',
+  'while',
+  'with',
+  'yield',
+
+  'Array',
+  'Date',
+  'eval',
+  'function',
+  'hasOwnProperty',
+  'Infinity',
+  'isFinite',
+  'isNaN',
+  'isPrototypeOf',
+  'length',
+  'Math',
+  'name',
+  'NaN',
+  'Number',
+  'Object',
+  'prototype',
+  'String',
+  'toString',
+  'undefined',
+  'valueOf'
+]
 
 const firstValue = (obj: OntologyItem, property: string): OntologyItemPropType => {
   if (obj && Object.prototype.hasOwnProperty.call(obj, property)) {
@@ -20,6 +105,14 @@ export async function generate(ontologies: Ontology[]) {
   const packages = new Project()
 
   for (const ontology of ontologies) {
+    const safeTermSymbol = (term: string) => {
+      if (RESERVED_KEYWORDS.includes(term)) {
+        return `${ontology.symbol}${term}`
+      }
+
+      return term
+    }
+
     const packageJSON = Object.assign(
       {},
       defaults,
@@ -31,6 +124,73 @@ export async function generate(ontologies: Ontology[]) {
     packages.createSourceFile(
       `packages/${ontology.symbol}/package.json`,
       JSON.stringify(packageJSON, null, 2)
+    )
+
+    const rdfImport: StatementStructures = {
+      kind: StructureKind.ImportDeclaration,
+      moduleSpecifier: "rdflib",
+      namedImports: [
+        {
+          name: "Namespace"
+        }
+      ]
+    };
+
+    const ns: StatementStructures = {
+      kind: StructureKind.VariableStatement,
+      declarationKind: VariableDeclarationKind.Const,
+      declarations: [
+        {
+          kind: StructureKind.VariableDeclaration,
+          name: "ns",
+          initializer: `Namespace("${ontology.ns.value}")`,
+        }
+      ],
+      isExported: true
+    }
+
+    const properties = ontology.properties.map((property): StatementStructures => ({
+      kind: StructureKind.VariableStatement,
+      declarationKind: VariableDeclarationKind.Const,
+      declarations: [
+        {
+          kind: StructureKind.VariableDeclaration,
+          name: safeTermSymbol(property.term),
+          initializer: `ns("${property.term}")`,
+        }
+      ],
+      isExported: false
+    }))
+
+    const propertyShorthands = ontology
+      .properties
+      .map((property) => ts.createShorthandPropertyAssignment(safeTermSymbol(property.term)))
+
+    const defaultExport = ts.createExportDefault(ts.createObjectLiteral(propertyShorthands, true))
+
+    const printer = ts.createPrinter({
+      omitTrailingSemicolon: false,
+    });
+
+    const result = printer.printNode(
+      ts.EmitHint.Unspecified,
+      defaultExport,
+      ts.createSourceFile("", "", ScriptTarget.ES2019)
+    );
+
+    packages.createSourceFile(
+      `packages/${ontology.symbol}/index.ts`,
+      {
+        statements: [
+          rdfImport,
+          "\n",
+          ns,
+          "\n",
+          ...properties,
+          "\n",
+          result
+        ]
+      }
     )
   }
 

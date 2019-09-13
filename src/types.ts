@@ -34,9 +34,12 @@ export interface Ontology extends OntologyItem {
 
 export interface OntologyProperty extends OntologyItem {
   domain: NamedNode[]
+  label: SomeTerm[]
   range: NamedNode[]
+  term: string
 }
 
 export interface OntologyClass extends OntologyItem {
+  label: SomeTerm[]
   subClassOf: NamedNode[]
 }
