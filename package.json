@@ -1,12 +1,19 @@
 {
-  "name": "ontologies",
+  "name": "@ontologies/core",
   "version": "1.0.0",
   "description": "Like definitely typed, but for ontologies",
-  "main": "index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/module/index.js",
+  "sideEffects": true,
+  "types": "dist/module/index.d.ts",
   "scripts": {
-    "clean": "rm -rf packages/",
+    "clean": "rm -rf packages/* && rm -rf dist/*",
+    "build": "yarn build:core && yarn generate",
+    "build:core": "yarn build:module && yarn build:cjs",
+    "build:cjs": "tsc --outDir ./dist/cjs -m commonjs core/index.ts",
+    "build:module": "tsc --outDir ./dist/module -d -m es6 core/index.ts",
     "generate": "ts-node src/index.ts",
-    "rebuild": "yarn clean && yarn generate",
+    "rebuild": "yarn clean && yarn build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,7 +26,11 @@
     "url": "https://github.com/ontola/ontologies/issues"
   },
   "homepage": "https://github.com/ontola/ontologies#readme",
-  "dependencies": {
+  "peerDependencies": {
+    "@ontologies/core": ">=1.1.0"
+  },
+  "devDependencies": {
+    "@ontologies/core": ">=1.1.0",
     "@types/glob": "^7.1.1",
     "glob": "^7.1.4",
     "npm-registry-client": "^8.6.0",

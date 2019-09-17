@@ -3,4 +3,7 @@ node_modules/*
 .rpt2*
 coverage/**
 packages/*
-dist/
+core/*
+ontologies/*
+src/*
+packages/*

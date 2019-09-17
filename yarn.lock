@@ -38,6 +38,19 @@
     "@nodelib/fs.scandir" "2.1.1"
     fastq "^1.6.0"
 
+"@ontologies/core@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ontologies/core/-/core-1.0.0.tgz#7bc8f42313526728d4988e0a124b2d263573dc38"
+  integrity sha512-I2SVQmzhL9x7v/gcb+tqnGJSJj79iUqb7qTlHP0K/KkG6KiQTHCUlUmMNbB5ZJRpBUvjSP7Nsu5jjAWcx0QHLg==
+  dependencies:
+    "@types/glob" "^7.1.1"
+    glob "^7.1.4"
+    npm-registry-client "^8.6.0"
+    rdflib "npm:link-rdflib@0.21.1-20190812T114001"
+    ts-morph "^4.0.1"
+    ts-node "^8.4.1"
+    typescript "^3.6.3"
+
 "@solid/cli@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@solid/cli/-/cli-0.1.1.tgz#83b58baffd78e0b02a47b92dceff1dcb9671f48b"

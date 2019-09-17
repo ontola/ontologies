@@ -104,3 +104,6 @@ export interface DataFactory {
 
   equals (a: Comparable, b: Comparable): boolean
 }
+
+export type Namespace = (term:string) => NamedNode
+export type NamespaceCreator = (ns: string) => Namespace

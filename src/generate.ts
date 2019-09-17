@@ -1,6 +1,7 @@
 import { Project, StatementStructures, StructureKind, ts, VariableDeclarationKind } from 'ts-morph'
 import { ScriptTarget } from 'typescript/lib/tsserverlibrary'
 import defaults from './defaults.package.json'
+import { packageTSIndexFile } from './helpers'
 import { Ontology, OntologyItem, OntologyItemPropType } from './types'
 
 // From https://github.com/jonschlinkert/reserved/blob/master/index.js
@@ -101,7 +102,7 @@ const firstValue = (obj: OntologyItem, property: string): OntologyItemPropType =
   return undefined
 }
 
-export async function generate(ontologies: Ontology[]) {
+export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
   const packages = new Project()
 
   for (const ontology of ontologies) {
@@ -128,10 +129,10 @@ export async function generate(ontologies: Ontology[]) {
 
     const rdfImport: StatementStructures = {
       kind: StructureKind.ImportDeclaration,
-      moduleSpecifier: "rdflib",
+      moduleSpecifier: "@ontologies/core",
       namedImports: [
         {
-          name: "Namespace"
+          name: "createNS"
         }
       ]
     };
@@ -143,7 +144,7 @@ export async function generate(ontologies: Ontology[]) {
         {
           kind: StructureKind.VariableDeclaration,
           name: "ns",
-          initializer: `Namespace("${ontology.ns.value}")`,
+          initializer: `createNS("${ontology.ns.value}")`,
         }
       ],
       isExported: true
@@ -179,7 +180,7 @@ export async function generate(ontologies: Ontology[]) {
     );
 
     packages.createSourceFile(
-      `packages/${ontology.symbol}/index.ts`,
+      packageTSIndexFile(ontology),
       {
         statements: [
           rdfImport,
@@ -195,4 +196,6 @@ export async function generate(ontologies: Ontology[]) {
   }
 
   await packages.save()
+
+  return ontologies
 }
