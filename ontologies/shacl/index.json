@@ -1,0 +1,6 @@
+{
+  "name": "W3C Shapes Constraint Language (SHACL) Vocabulary",
+  "symbol": "sh",
+  "ns": "http://www.w3.org/ns/shacl#",
+  "source": "https://www.w3.org/ns/shacl.ttl"
+}

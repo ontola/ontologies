@@ -1,0 +1,6 @@
+{
+  "name": "Schema.org",
+  "symbol": "schema",
+  "ns": "http://schema.org/",
+  "source": "http://schema.org/version/latest/schema.ttl"
+}
