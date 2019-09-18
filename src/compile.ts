@@ -1,3 +1,4 @@
+import { ModuleResolutionKind } from 'ts-morph'
 import ts, { ModuleKind } from 'typescript'
 
 import tsconfig from '../tsconfig.json'
@@ -10,8 +11,10 @@ export const compile = (ontologies: Ontology[]) => {
     const program = ts.createProgram(
       [packageTSIndexFile(ontology)],
       {
-        ...tsconfig as unknown as ts.CompilerOptions,
+        ...tsconfig.compilerOptions as unknown as ts.CompilerOptions,
+        noEmit: false,
         module: ModuleKind.ES2015,
+        moduleResolution: ModuleResolutionKind.NodeJs,
         declaration: true,
       }
     );
