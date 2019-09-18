@@ -5,10 +5,10 @@ import {
   Literal,
   NamedNode,
   Node,
-  Quad, Quadruple,
-  RDFObject,
+  Quad,
+  Quadruple,
   Term,
-} from './types'
+} from "./types"
 
 /**
  * Plain JS/functional implementation of the RDF/JS: Data model specification, limited to a strict
@@ -118,6 +118,10 @@ export const PlainFactory: DataFactory = {
       return false
     }
 
+    if (Object.prototype.hasOwnProperty.call(a, 'equals')) {
+      return (a as any).equals(b)
+    }
+
     if (a instanceof Array || b instanceof Array) {
       if (!(a instanceof Array && b instanceof Array)) {
         return false
@@ -129,9 +133,9 @@ export const PlainFactory: DataFactory = {
         && this.equals(a[3], b[3])
     }
 
-    switch ((a as RDFObject).termType) {
+    switch (a.termType) {
       case 'Literal': {
-        return a.termType === a.termType
+        return a.termType === b.termType
           && (a as Term).value === (b as Term).value
           && (b as Literal).datatype === (b as Literal).datatype
           && (b as Literal).language === (b as Literal).language
@@ -143,8 +147,12 @@ export const PlainFactory: DataFactory = {
           && (a as Quad).graph === (b as Quad).graph
       }
       default:
+        if (!a.termType || !b.termType) {
+          return false
+        }
+
         return a.termType === b.termType
-          && (a as Term).value === (a as Term).value
+          && (a as Term).value === (b as Term).value
     }
   }
 }
