@@ -1,6 +1,6 @@
 {
   "name": "@ontologies/core",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Like definitely typed, but for ontologies",
   "main": "dist/cjs/index.js",
   "module": "dist/module/index.js",
@@ -27,10 +27,10 @@
   },
   "homepage": "https://github.com/ontola/ontologies#readme",
   "peerDependencies": {
-    "@ontologies/core": ">=1.4.0"
+    "@ontologies/core": ">=1.5.0"
   },
   "devDependencies": {
-    "@ontologies/core": ">=1.4.0",
+    "@ontologies/core": ">=1.5.0",
     "@types/glob": "^7.1.1",
     "@types/semver": "^6.0.2",
     "glob": "^7.1.4",
