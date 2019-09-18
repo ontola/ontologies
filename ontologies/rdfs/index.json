@@ -3,5 +3,6 @@
   "symbol": "rdfs",
   "ns": "http://www.w3.org/2000/01/rdf-schema#",
   "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/rdfs",
-  "source": "http://www.w3.org/2000/01/rdf-schema#"
+  "source": "http://www.w3.org/2000/01/rdf-schema#",
+  "spec": "https://www.w3.org/TR/rdf-schema/"
 }

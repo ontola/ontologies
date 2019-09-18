@@ -1,0 +1,8 @@
+{
+  "name": "The OWL 2 Schema vocabulary (OWL 2)",
+  "symbol": "owl",
+  "ns": "http://www.w3.org/2002/07/owl#",
+  "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/owl",
+  "source": "https://www.w3.org/2002/07/owl#",
+  "spec": "http://www.w3.org/TR/owl2-rdf-based-semantics/"
+}

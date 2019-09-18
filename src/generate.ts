@@ -176,7 +176,9 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
             initializer: `ns("${property.term}")`,
           }
         ],
-        leadingTrivia: property.comment ? `/** ${property.comment} */\n` : undefined,
+        leadingTrivia: (property.comment && property.comment[0])
+          ? `/** ${property.comment[0]} */\n`
+          : undefined,
         isExported: true
       }))
 

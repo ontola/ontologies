@@ -20,7 +20,7 @@ export const publish = (ontologies: Ontology[]): Promise<Ontology[]> => {
     const publishedVersion = publishedPackage.version
 
     if (semver.gt(localVersion, publishedVersion)) {
-      exec(`npm publish ../${packageFolder(ontology)}`, (err) => {
+      exec(`npm publish ../${packageFolder(ontology)} --dry-run`, (err) => {
         if (err) {
           reject(ontology)
         }

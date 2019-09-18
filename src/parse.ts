@@ -104,6 +104,7 @@ export function parse(): Promise<Ontology[]> {
           ns: new NamedNode(ontologyInfo.ns),
           source: ontologyInfo.source,
           lov: ontologyInfo.lov,
+          spec: ontologyInfo.spec,
           symbol: ontologyInfo.symbol,
           classes: getClasses(ontologyData, ontologyInfo),
           properties: getProperties(ontologyData, ontologyInfo),

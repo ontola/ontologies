@@ -9,6 +9,8 @@ export interface OntologyInfo {
   lov: string
   /** Location where the ontology can be fetched */
   source: string
+  /** Location where the ontology is officially specified */
+  spec: string,
   /** Preferred shortening symbol for the namespace */
   symbol: string
   /** The filename of the ontology file */
@@ -36,6 +38,7 @@ export interface Ontology extends OntologyItem {
   name: string
   properties: OntologyProperty[]
   source: string
+  spec: string
   symbol: string
   ns: NamedNode
 }

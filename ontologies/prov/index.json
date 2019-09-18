@@ -1,0 +1,8 @@
+{
+  "name": "PROV-O: The PROV Ontology",
+  "symbol": "prov",
+  "ns": "http://www.w3.org/ns/prov#",
+  "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/prov",
+  "source": "https://www.w3.org/ns/prov-o",
+  "spec": "https://www.w3.org/TR/prov-o/"
+}

@@ -3,5 +3,6 @@
   "symbol": "rdf",
   "ns": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
   "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/rdf",
-  "source": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  "source": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  "spec": "https://www.w3.org/TR/rdf11-concepts/"
 }
