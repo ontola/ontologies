@@ -1,5 +1,5 @@
 import * as  fs from "fs"
-import * as path from 'path'
+import * as path from "path"
 
 import glob from "glob"
 import {
@@ -7,72 +7,80 @@ import {
   IndexedFormula,
   Namespace,
   SomeTerm,
-  Statement,
   NamedNode,
-} from 'rdflib'
+  SomeNode,
+} from "rdflib"
+import { PlainFactory, Quad } from "../core"
 import {
   Ontology,
   OntologyClass,
   OntologyInfo,
   OntologyProperty,
-} from './types'
+} from "./types"
 
 const rdf = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 const rdfs = Namespace("http://www.w3.org/2000/01/rdf-schema#")
 const owl = Namespace("http://www.w3.org/2002/07/owl#")
-const classTypes: SomeTerm[] = [
+const classTypes: SomeNode[] = [
   rdfs("Class"),
   owl("Class"),
 ];
-const propertyTypes: SomeTerm[] = [
+const propertyTypes: SomeNode[] = [
   rdf("Property"),
   owl("ObjectProperty"),
 ];
 
-function parseOntology(file: string, ontologyInfo: OntologyInfo): Promise<IndexedFormula> {
+function parseOntology(packageFile: string, ontologyInfo: OntologyInfo): Promise<IndexedFormula> {
   return new Promise((resolve) => {
+    const file = ontologyInfo.ontologyFile || "ontology.ttl"
+    const fileType = ontologyInfo.ontologyType || "text/turtle"
     const ontology = new IndexedFormula()
+    const ontologyFile = fs.readFileSync(path.resolve(packageFile, `../${file}`), "utf8")
 
-    parseRDF(file, ontology, ontologyInfo.ns, "text/turtle", () => {
+    parseRDF(ontologyFile, ontology, ontologyInfo.ns, fileType, () => {
       resolve(ontology)
     })
   })
 }
 
-function getClasses(ontologyData: IndexedFormula,  ontologyInfo: OntologyInfo): OntologyClass[] {
-  const getProperty = (st: Statement, prop: NamedNode): SomeTerm[] =>
-    ontologyData.match(st.subject, prop).map(s => s.object);
-
+function uniqueResourcesOfType(ontologyData: IndexedFormula, types: SomeNode[]): SomeNode[] {
   return ontologyData
     .statements
-    .filter((st) => st.predicate === rdf("type") && classTypes.includes(st.object))
-    .map((property) => ({
-      iri: property.subject,
-      label: getProperty(property, rdfs("label")),
-      comment: getProperty(property, rdfs("comment")),
-      isDefinedBy: getProperty(property, rdfs("isDefinedBy")),
-      seeAlso: getProperty(property, rdfs("seeAlso")),
-      subClassOf: getProperty(property, rdfs("subClassOf")).filter(term => term.termType === "NamedNode") as NamedNode[],
-      term: property.subject.value.substring(ontologyInfo.ns.length),
+    .filter((st) => st.predicate === rdf("type") && types.includes(st.object as SomeNode))
+    .map((s) => s.subject)
+    .filter((value, index, self) => self.findIndex((s) => PlainFactory.equals(s as unknown as Quad, value as unknown as Quad)) === index)
+}
+
+function getClasses(ontologyData: IndexedFormula,  ontologyInfo: OntologyInfo): OntologyClass[] {
+  const getProperty = (subject: SomeNode, prop: NamedNode): SomeTerm[] =>
+    ontologyData.match(subject, prop).map(s => s.object);
+
+  return uniqueResourcesOfType(ontologyData, classTypes)
+    .map((subject: SomeNode) => ({
+      iri: subject,
+      label: getProperty(subject, rdfs("label")),
+      comment: getProperty(subject, rdfs("comment")),
+      isDefinedBy: getProperty(subject, rdfs("isDefinedBy")),
+      seeAlso: getProperty(subject, rdfs("seeAlso")),
+      subClassOf: getProperty(subject, rdfs("subClassOf")).filter(term => term.termType === "NamedNode") as NamedNode[],
+      term: subject.value.substring(ontologyInfo.ns.length),
     }))
 }
 
 function getProperties(ontologyData: IndexedFormula, ontologyInfo: OntologyInfo): OntologyProperty[] {
-  const getProperty = (st: Statement, prop: NamedNode): SomeTerm[] =>
-    ontologyData.match(st.subject, prop).map(s => s.object);
+  const getProperty = (subject: SomeNode, prop: NamedNode): SomeTerm[] =>
+    ontologyData.match(subject, prop).map(s => s.object);
 
-  return ontologyData
-    .statements
-    .filter((st) => st.predicate === rdf("type") && propertyTypes.includes(st.object))
-    .map((property) => ({
-      iri: property.subject,
-      label: getProperty(property, rdfs("label")),
-      comment: getProperty(property, rdfs("comment")),
-      isDefinedBy: getProperty(property, rdfs("isDefinedBy")),
-      seeAlso: getProperty(property, rdfs("seeAlso")),
-      domain: getProperty(property, rdfs("domain")).filter(term => term.termType === "NamedNode") as NamedNode[],
-      term: property.subject.value.substring(ontologyInfo.ns.length),
-      range: getProperty(property, rdfs("range")).filter(term => term.termType === "NamedNode") as NamedNode[],
+  return uniqueResourcesOfType(ontologyData, propertyTypes)
+    .map((subject: SomeNode) => ({
+      iri: subject,
+      label: getProperty(subject, rdfs("label")),
+      comment: getProperty(subject, rdfs("comment")),
+      isDefinedBy: getProperty(subject, rdfs("isDefinedBy")),
+      seeAlso: getProperty(subject, rdfs("seeAlso")),
+      domain: getProperty(subject, rdfs("domain")).filter(term => term.termType === "NamedNode") as NamedNode[],
+      term: subject.value.substring(ontologyInfo.ns.length),
+      range: getProperty(subject, rdfs("range")).filter(term => term.termType === "NamedNode") as NamedNode[],
     }))
 }
 
@@ -88,13 +96,14 @@ export function parse(): Promise<Ontology[]> {
       for (const file of files) {
         const infoFile = fs.readFileSync(file, "utf8")
         const ontologyInfo = JSON.parse(infoFile) as OntologyInfo;
-        const ontologyFile = fs.readFileSync(path.resolve(file, '../ontology.ttl'), "utf8")
 
-        const ontologyData = await parseOntology(ontologyFile, ontologyInfo)
+        const ontologyData = await parseOntology(file, ontologyInfo)
 
         const ontology = {
           name: ontologyInfo.name,
           ns: new NamedNode(ontologyInfo.ns),
+          source: ontologyInfo.source,
+          lov: ontologyInfo.lov,
           symbol: ontologyInfo.symbol,
           classes: getClasses(ontologyData, ontologyInfo),
           properties: getProperties(ontologyData, ontologyInfo),

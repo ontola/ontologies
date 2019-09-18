@@ -1,12 +1,12 @@
-import { ModuleResolutionKind } from 'ts-morph'
-import ts, { ModuleKind } from 'typescript'
+import { ModuleResolutionKind } from "ts-morph"
+import ts, { ModuleKind } from "typescript"
 
-import tsconfig from '../tsconfig.json'
+import tsconfig from "../tsconfig.json"
 
-import { packageTSIndexFile } from './helpers'
-import { Ontology } from './types'
+import { packageTSIndexFile } from "./helpers"
+import { Ontology } from "./types"
 
-export const compile = (ontologies: Ontology[]) => {
+export const compile = (ontologies: Ontology[]): Ontology[] => {
   for (const ontology of ontologies) {
     const program = ts.createProgram(
       [packageTSIndexFile(ontology)],
@@ -18,7 +18,8 @@ export const compile = (ontologies: Ontology[]) => {
         declaration: true,
       }
     );
-    const emitResult = program.emit();
-    console.log(emitResult)
+    program.emit();
   }
+
+  return ontologies
 }

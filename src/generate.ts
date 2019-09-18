@@ -1,8 +1,11 @@
-import { Project, StatementStructures, StructureKind, ts, VariableDeclarationKind } from 'ts-morph'
-import { ScriptTarget } from 'typescript/lib/tsserverlibrary'
-import defaults from './defaults.package.json'
-import { packageTSIndexFile } from './helpers'
-import { Ontology, OntologyItem, OntologyItemPropType } from './types'
+import * as fs from "fs"
+import Handlebars from "handlebars"
+import { Project, StatementStructures, StructureKind, ts, VariableDeclarationKind } from "ts-morph"
+import { ScriptTarget } from "typescript/lib/tsserverlibrary"
+
+import defaults from "../templates/defaults.package.json"
+import { packageTSIndexFile } from "./helpers"
+import { Ontology, OntologyItem, OntologyItemPropType } from "./types"
 
 // From https://github.com/jonschlinkert/reserved/blob/master/index.js
 const RESERVED_KEYWORDS = [
@@ -105,6 +108,8 @@ const firstValue = (obj: OntologyItem, property: string): OntologyItemPropType =
 export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
   const packages = new Project()
 
+  const readmeTemplate = Handlebars.compile(fs.readFileSync("./templates/readme.template.md").toString('utf-8'))
+
   for (const ontology of ontologies) {
     const safeTermSymbol = (term: string) => {
       if (RESERVED_KEYWORDS.includes(term)) {
@@ -125,6 +130,17 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
     packages.createSourceFile(
       `packages/${ontology.symbol}/package.json`,
       JSON.stringify(packageJSON, null, 2)
+    )
+
+    packages.createSourceFile(
+      `packages/${ontology.symbol}/README.md`,
+      readmeTemplate({
+        ...ontology,
+        ...packageJSON,
+        humanName: ontology.name,
+        ontologiesRepo: 'https://github.com/ontola/ontologies',
+        ns: ontology.ns.value,
+      })
     )
 
     const rdfImport: StatementStructures = {
@@ -151,17 +167,18 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
     }
 
     const properties = ontology.properties.map((property): StatementStructures => ({
-      kind: StructureKind.VariableStatement,
-      declarationKind: VariableDeclarationKind.Const,
-      declarations: [
-        {
-          kind: StructureKind.VariableDeclaration,
-          name: safeTermSymbol(property.term),
-          initializer: `ns("${property.term}")`,
-        }
-      ],
-      isExported: false
-    }))
+        kind: StructureKind.VariableStatement,
+        declarationKind: VariableDeclarationKind.Const,
+        declarations: [
+          {
+            kind: StructureKind.VariableDeclaration,
+            name: safeTermSymbol(property.term),
+            initializer: `ns("${property.term}")`,
+          }
+        ],
+        leadingTrivia: property.comment ? `/** ${property.comment} */\n` : undefined,
+        isExported: true
+      }))
 
     const propertyShorthands = ontology
       .properties

@@ -1,14 +1,20 @@
-import { NamedNode, SomeTerm } from 'rdflib'
+import { NamedNode, SomeTerm } from "rdflib"
 
 export interface OntologyInfo {
   /** Human readable name */
   name: string
   /** The namespace IRI */
   ns: string
+  /** The Linked Open Vocabularies URL */
+  lov: string
   /** Location where the ontology can be fetched */
   source: string
   /** Preferred shortening symbol for the namespace */
   symbol: string
+  /** The filename of the ontology file */
+  ontologyFile?: string
+  /** The datatype of the ontology file */
+  ontologyType?: string
 }
 
 export type OntologyItemPropType = undefined | string | SomeTerm | OntologyClass | OntologyProperty
@@ -26,8 +32,10 @@ export interface OntologyItem {
 
 export interface Ontology extends OntologyItem {
   classes: OntologyClass[]
+  lov: string
   name: string
   properties: OntologyProperty[]
+  source: string
   symbol: string
   ns: NamedNode
 }

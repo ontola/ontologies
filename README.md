@@ -1,5 +1,5 @@
 # Ontologies
-Like DefinitelyTyped, but for ontologies.
+Never manage a namespace object map again, scrap typo's for well-known ontologies. Like DefinitelyTyped, but for ontologies.
 
 ## Usage
 

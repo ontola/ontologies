@@ -32,9 +32,12 @@
   "devDependencies": {
     "@ontologies/core": ">=1.4.0",
     "@types/glob": "^7.1.1",
+    "@types/semver": "^6.0.2",
     "glob": "^7.1.4",
-    "npm-registry-client": "^8.6.0",
+    "handlebars": "^4.2.0",
+    "npm-registry-fetch": "^4.0.1",
     "rdflib": "npm:link-rdflib@0.21.1-20190812T114001",
+    "semver": "^6.3.0",
     "ts-morph": "^4.0.1",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3"
