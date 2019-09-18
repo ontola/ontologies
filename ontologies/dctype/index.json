@@ -2,5 +2,6 @@
   "name": "DCMI Type Vocabulary",
   "symbol": "dctype",
   "ns": "http://purl.org/dc/dcmitype/",
+  "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/dctype",
   "source": "https://www.dublincore.org/2012/06/14/dctype.ttl"
 }

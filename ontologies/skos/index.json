@@ -1,0 +1,9 @@
+{
+  "name": "SKOS Simple Knowledge Organization System",
+  "symbol": "skos",
+  "ns": "http://www.w3.org/2004/02/skos/core#",
+  "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/skos",
+  "source": "https://www.w3.org/2009/08/skos-reference/skos.rdf",
+  "ontologyFile": "ontology.rdf",
+  "ontologyType": "application/rdf+xml"
+}

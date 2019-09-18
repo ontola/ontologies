@@ -2,6 +2,7 @@
   "name": "Dublin Core Metadata Element Set, Version 1.1",
   "symbol": "dcelems",
   "ns": "http://purl.org/dc/elements/1.1/",
+  "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/dce",
   "source": "https://www.dublincore.org/2012/06/14/dcelements.ttl",
   "version": "1.1.0"
 }

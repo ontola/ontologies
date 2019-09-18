@@ -2,5 +2,6 @@
   "name": "Schema.org",
   "symbol": "schema",
   "ns": "http://schema.org/",
+  "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/schema",
   "source": "http://schema.org/version/latest/schema.ttl"
 }

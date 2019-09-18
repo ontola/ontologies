@@ -2,5 +2,6 @@
   "name": "DCMI Metadata Terms",
   "symbol": "dcterms",
   "ns": "http://purl.org/dc/terms/",
+  "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/dcterms",
   "source": "https://www.dublincore.org/2012/06/14/dcterms.ttl"
 }
