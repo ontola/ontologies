@@ -2,6 +2,7 @@ import * as  fs from "fs"
 import * as path from "path"
 
 import glob from "glob"
+import * as N3 from "n3"
 import {
   parse as parseRDF,
   IndexedFormula,
@@ -9,8 +10,13 @@ import {
   SomeTerm,
   NamedNode,
   SomeNode,
-} from "rdflib"
+  Statement,
+  BlankNode,
+  Literal,
+} from 'rdflib'
+
 import { PlainFactory, Quad } from "../core"
+
 import {
   Ontology,
   OntologyClass,
@@ -30,30 +36,56 @@ const propertyTypes: SomeNode[] = [
   owl("ObjectProperty"),
 ];
 
-function parseOntology(packageFile: string, ontologyInfo: OntologyInfo): Promise<IndexedFormula> {
+function parseOntology(packageFile: string, ontologyInfo: OntologyInfo): Promise<Statement[]> {
   return new Promise((resolve) => {
     const file = ontologyInfo.ontologyFile || "ontology.ttl"
     const fileType = ontologyInfo.ontologyType || "text/turtle"
-    const ontology = new IndexedFormula()
     const ontologyFile = fs.readFileSync(path.resolve(packageFile, `../${file}`), "utf8")
 
-    parseRDF(ontologyFile, ontology, ontologyInfo.ns, fileType, () => {
-      resolve(ontology)
-    })
+    if (fileType === "text/turtle") {
+      const statements = new N3.Parser()
+        .parse(ontologyFile)
+        .map((quad) => {
+          const subject = quad.subject.termType === "NamedNode"
+            ? new NamedNode(quad.subject.value)
+            : new BlankNode(quad.subject.value)
+          const predicate = new NamedNode(quad.predicate.value)
+          const object = quad.object.termType === "Literal"
+            ? new Literal(
+              quad.object.value,
+              quad.object.language,
+              quad.object.datatype
+                ? new NamedNode(quad.object.datatype.value)
+                : undefined
+            )
+            : quad.object.termType === "NamedNode"
+              ? new NamedNode(quad.object.value)
+              : new BlankNode(quad.object.value)
+
+          return new Statement(subject, predicate, object)
+        })
+      resolve(statements)
+    } else {
+      const ontology = new IndexedFormula()
+      parseRDF(ontologyFile, ontology, ontologyInfo.ns, fileType, () => {
+        resolve(ontology.statements)
+      })
+    }
   })
 }
 
-function uniqueResourcesOfType(ontologyData: IndexedFormula, types: SomeNode[]): SomeNode[] {
+function uniqueResourcesOfType(ontologyData: Statement[], types: SomeNode[]): SomeNode[] {
   return ontologyData
-    .statements
     .filter((st) => st.predicate === rdf("type") && types.includes(st.object as SomeNode))
     .map((s) => s.subject)
     .filter((value, index, self) => self.findIndex((s) => PlainFactory.equals(s as unknown as Quad, value as unknown as Quad)) === index)
 }
 
-function getClasses(ontologyData: IndexedFormula,  ontologyInfo: OntologyInfo): OntologyClass[] {
+function getClasses(ontologyData: Statement[],  ontologyInfo: OntologyInfo): OntologyClass[] {
   const getProperty = (subject: SomeNode, prop: NamedNode): SomeTerm[] =>
-    ontologyData.match(subject, prop).map(s => s.object);
+    ontologyData
+      .filter((s) => PlainFactory.equals(s.subject, subject) && PlainFactory.equals(s.predicate, prop))
+      .map(s => s.object);
 
   return uniqueResourcesOfType(ontologyData, classTypes)
     .map((subject: SomeNode) => ({
@@ -67,9 +99,11 @@ function getClasses(ontologyData: IndexedFormula,  ontologyInfo: OntologyInfo): 
     }))
 }
 
-function getProperties(ontologyData: IndexedFormula, ontologyInfo: OntologyInfo): OntologyProperty[] {
+function getProperties(ontologyData: Statement[], ontologyInfo: OntologyInfo): OntologyProperty[] {
   const getProperty = (subject: SomeNode, prop: NamedNode): SomeTerm[] =>
-    ontologyData.match(subject, prop).map(s => s.object);
+    ontologyData
+      .filter((s) => PlainFactory.equals(s.subject, subject) && PlainFactory.equals(s.predicate, prop))
+      .map(s => s.object);
 
   return uniqueResourcesOfType(ontologyData, propertyTypes)
     .map((subject: SomeNode) => ({

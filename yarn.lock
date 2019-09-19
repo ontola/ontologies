@@ -38,10 +38,10 @@
     "@nodelib/fs.scandir" "2.1.1"
     fastq "^1.6.0"
 
-"@ontologies/core@>=1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@ontologies/core/-/core-1.4.0.tgz#a0146db436c8ddf4e73c9db2fd6a4bc52ae4d1e3"
-  integrity sha512-45easpZAXJiJwyyQonAoc58TaPiYXJhsMjxtOtNK0bTr0bWFx52z9n6EX7FBkRZ7lLIVXM5E5xizo9YO2Ujf7g==
+"@ontologies/core@>=1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@ontologies/core/-/core-1.5.0.tgz#a37940a68e2a7a50f9f81f0ecbf8de8439eca2e4"
+  integrity sha512-0jy+R4X+kGz3izh6GYCLm0poisx/3S5OnQrXB/C+JQLyI3QfQcBT2yTH59SmKKngBKT8Asu0FSanVQdZhbq88Q==
 
 "@solid/cli@^0.1.1":
   version "0.1.1"
@@ -132,10 +132,25 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
+"@types/n3@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/n3/-/n3-1.1.1.tgz#eb9497843f151f0a81d3480d52401d3085dfa7fe"
+  integrity sha512-Vl18OW3L7L3o++K4qnJQutzEWPTKADFjm/yGYGtpx03neEV/00tCzuyC3hd8pcINne46o0fT6LF1IYCfcR9HDA==
+  dependencies:
+    "@types/node" "*"
+    "@types/rdf-js" "*"
+
 "@types/node@*":
   version "12.7.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.2.tgz#c4e63af5e8823ce9cc3f0b34f7b998c2171f0c44"
   integrity sha512-dyYO+f6ihZEtNPDcWNR1fkoTDf3zAK3lAABDze3mz6POyIercH0lEUawUFXlG8xaQZmm1yEBON/4TsYv/laDYg==
+
+"@types/rdf-js@*":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-2.0.2.tgz#4e5e3d3e92a24bcd523be63dc9cc9001f11df348"
+  integrity sha512-rHtC0mtRmMc9JzITesWhzmAXqfyJZhY8MygmmWZc3oWS5DPsGsKs+t3RXxGYlM4UKOqlD9Ki4owS1Cx/GPMeqw==
+  dependencies:
+    "@types/node" "*"
 
 "@types/semver@^6.0.2":
   version "6.0.2"
@@ -1105,7 +1120,7 @@ n3@^0.4.1:
   resolved "https://registry.yarnpkg.com/n3/-/n3-0.4.5.tgz#5b70d3ab6a21c9e8d4c9bda2a3d4d90909beb508"
   integrity sha1-W3DTq2ohyejUyb2io9TZCQm+tQg=
 
-n3@^1.0.3:
+n3@^1.0.3, n3@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/n3/-/n3-1.2.0.tgz#4d04e953007438f8e39635e13562dcfa66fb1e9b"
   integrity sha512-3VZD31lRyG2JoAa7imyhAIUZbqaZk4FSsa5QenNjUhNNJKomMLcwuhAOyl+i/suT7UB2H16Ta/7tSUP+Hkq/EQ==
