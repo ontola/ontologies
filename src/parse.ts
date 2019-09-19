@@ -29,11 +29,14 @@ const rdfs = Namespace("http://www.w3.org/2000/01/rdf-schema#")
 const owl = Namespace("http://www.w3.org/2002/07/owl#")
 const classTypes: SomeNode[] = [
   rdfs("Class"),
+  rdfs("Datatype"),
+  rdf("List"),
   owl("Class"),
 ];
 const propertyTypes: SomeNode[] = [
   rdf("Property"),
   owl("ObjectProperty"),
+  owl("DatatypeProperty"),
 ];
 
 function parseOntology(packageFile: string, ontologyInfo: OntologyInfo): Promise<Statement[]> {
@@ -74,9 +77,13 @@ function parseOntology(packageFile: string, ontologyInfo: OntologyInfo): Promise
   })
 }
 
-function uniqueResourcesOfType(ontologyData: Statement[], types: SomeNode[]): SomeNode[] {
+function uniqueResourcesOfType(ontologyData: Statement[],
+                               ontologyInfo: OntologyInfo,
+                               types: SomeNode[]): SomeNode[] {
   return ontologyData
-    .filter((st) => st.predicate === rdf("type") && types.includes(st.object as SomeNode))
+    .filter((st) => st.subject.value.startsWith(ontologyInfo.ns)
+      && st.predicate === rdf("type")
+      && types.includes(st.object as SomeNode))
     .map((s) => s.subject)
     .filter((value, index, self) => self.findIndex((s) => PlainFactory.equals(s as unknown as Quad, value as unknown as Quad)) === index)
 }
@@ -87,7 +94,7 @@ function getClasses(ontologyData: Statement[],  ontologyInfo: OntologyInfo): Ont
       .filter((s) => PlainFactory.equals(s.subject, subject) && PlainFactory.equals(s.predicate, prop))
       .map(s => s.object);
 
-  return uniqueResourcesOfType(ontologyData, classTypes)
+  return uniqueResourcesOfType(ontologyData, ontologyInfo, classTypes)
     .map((subject: SomeNode) => ({
       iri: subject,
       label: getProperty(subject, rdfs("label")),
@@ -105,7 +112,7 @@ function getProperties(ontologyData: Statement[], ontologyInfo: OntologyInfo): O
       .filter((s) => PlainFactory.equals(s.subject, subject) && PlainFactory.equals(s.predicate, prop))
       .map(s => s.object);
 
-  return uniqueResourcesOfType(ontologyData, propertyTypes)
+  return uniqueResourcesOfType(ontologyData, ontologyInfo, propertyTypes)
     .map((subject: SomeNode) => ({
       iri: subject,
       label: getProperty(subject, rdfs("label")),

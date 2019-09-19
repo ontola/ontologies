@@ -48,6 +48,18 @@ import { ns } from '@ontologies/schema'
 console.log(ns('extension')) // http://schema.org/extension
 ```
 
+### Non-js symbols
+Dashes in term names are replaced with underscores. The default export contains both the verbatim
+and the underscored values.
+
+```javascript
+import dcterms, { ISO639_2 } from '@ontologies'
+
+console.log(ISO639_2) // NamedNode(http://purl.org/dc/terms/ISO639-2)
+console.log(dcterms.ISO639_2) // NamedNode(http://purl.org/dc/terms/ISO639-2)
+console.log(dcterms['ISO639-2']) // NamedNode(http://purl.org/dc/terms/ISO639-2)
+```
+
 ### Collisions with ES reserved keywords
 No reserved object property keys exist for JavaScript object literals, so when using the default
 export, terms can be accessed directly:

@@ -96,6 +96,8 @@ const RESERVED_KEYWORDS = [
   'valueOf',
 ]
 
+const UNSAFE_TOKENS = ['-']
+
 const firstValue = (obj: OntologyItem, property: string): OntologyItemPropType => {
   if (obj && Object.prototype.hasOwnProperty.call(obj, property)) {
     const prop = obj[property]
@@ -114,10 +116,10 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
   for (const ontology of ontologies) {
     const safeTermSymbol = (term: string) => {
       if (RESERVED_KEYWORDS.includes(term)) {
-        return `${ontology.symbol}${term}`
+        return `${ontology.symbol}${term.replace('-', '_')}`
       }
 
-      return term
+      return term.replace('-', '_')
     }
 
     const packageJSON = Object.assign(
@@ -202,13 +204,26 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
     const defaultExportSymbols: Array<ts.ShorthandPropertyAssignment | ts.PropertyAssignment> = [
       ts.createShorthandPropertyAssignment('ns'),
       ...[...ontology.classes, ...ontology.properties]
-        .map((property) => {
+        .flatMap<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>((property) => {
           const safeTerm = safeTermSymbol(property.term)
           if (safeTerm !== property.term) {
-            return ts.createPropertyAssignment(property.term, ts.createIdentifier(safeTerm))
+            const nonValidIdentifier = UNSAFE_TOKENS.some((token) => property.term.includes(token))
+
+            const exactPropertyName = nonValidIdentifier
+              ? ts.createComputedPropertyName(ts.createLiteral(property.term))
+              : property.term
+
+            const validIndentifierPropertyName = nonValidIdentifier
+              ? ts.createPropertyAssignment(safeTerm, ts.createIdentifier(safeTerm))
+              : undefined
+
+            return [
+              validIndentifierPropertyName,
+              ts.createPropertyAssignment(exactPropertyName, ts.createIdentifier(safeTerm)),
+            ].filter(Boolean) as Array<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>
           }
 
-          return ts.createShorthandPropertyAssignment(safeTermSymbol(property.term))
+          return ts.createShorthandPropertyAssignment(safeTerm)
         })
     ]
 
@@ -216,13 +231,13 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
 
     const printer = ts.createPrinter({
       omitTrailingSemicolon: false,
-    });
+    })
 
     const defaultExportPrintedNode = printer.printNode(
       ts.EmitHint.Unspecified,
       defaultExport,
       ts.createSourceFile("", "", ScriptTarget.ES2019)
-    );
+    )
 
     packages.createSourceFile(
       packageTSIndexFile(ontology),
