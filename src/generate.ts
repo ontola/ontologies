@@ -1,6 +1,12 @@
 import * as fs from "fs"
 import Handlebars from "handlebars"
-import { Project, StatementStructures, StructureKind, ts, VariableDeclarationKind } from "ts-morph"
+import {
+  Project,
+  StatementStructures,
+  StructureKind,
+  ts,
+  VariableDeclarationKind,
+} from 'ts-morph'
 import { ScriptTarget } from "typescript/lib/tsserverlibrary"
 
 import defaults from "../templates/defaults.package.json"
@@ -11,9 +17,10 @@ const RESERVED_KEYWORDS = [
   // Not JS spec, but reserved for custom terms
   'ns',
 
-  // From https://github.com/jonschlinkert/reserved/blob/master/index.js
+  // From https://www.w3schools.com/js/js_reserved.asp
   'abstract',
   'arguments',
+  'await',
   'boolean',
   'break',
   'byte',
@@ -76,8 +83,6 @@ const RESERVED_KEYWORDS = [
   'with',
   'yield',
 
-  'Array',
-  'Date',
   'eval',
   'function',
   'hasOwnProperty',
@@ -85,17 +90,10 @@ const RESERVED_KEYWORDS = [
   'isFinite',
   'isNaN',
   'isPrototypeOf',
-  'length',
-  'Math',
-  'name',
   'NaN',
-  'Number',
-  'Object',
   'prototype',
-  'String',
-  'toString',
   'undefined',
-  'valueOf'
+  'valueOf',
 ]
 
 const firstValue = (obj: OntologyItem, property: string): OntologyItemPropType => {
@@ -201,15 +199,20 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
         isExported: true
       }))
 
-    const shorthandDefaultExport = [ts.createShorthandPropertyAssignment('ns')]
-      .concat(ontology
-        .classes
-        .map((property) => ts.createShorthandPropertyAssignment(safeTermSymbol(property.term))))
-      .concat(ontology
-        .properties
-        .map((property) => ts.createShorthandPropertyAssignment(safeTermSymbol(property.term))))
+    const defaultExportSymbols: Array<ts.ShorthandPropertyAssignment | ts.PropertyAssignment> = [
+      ts.createShorthandPropertyAssignment('ns'),
+      ...[...ontology.classes, ...ontology.properties]
+        .map((property) => {
+          const safeTerm = safeTermSymbol(property.term)
+          if (safeTerm !== property.term) {
+            return ts.createPropertyAssignment(property.term, ts.createIdentifier(safeTerm))
+          }
 
-    const defaultExport = ts.createExportDefault(ts.createObjectLiteral(shorthandDefaultExport, true))
+          return ts.createShorthandPropertyAssignment(safeTermSymbol(property.term))
+        })
+    ]
+
+    const defaultExport = ts.createExportDefault(ts.createObjectLiteral(defaultExportSymbols, true))
 
     const printer = ts.createPrinter({
       omitTrailingSemicolon: false,

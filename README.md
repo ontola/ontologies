@@ -49,14 +49,23 @@ console.log(ns('extension')) // http://schema.org/extension
 ```
 
 ### Collisions with ES reserved keywords
-When a term from a vocabulary collides with a [reserved keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords)
-or certain built-in classes, the term is prepended with the symbol of the ontology.
+No reserved object property keys exist for JavaScript object literals, so when using the default
+export, terms can be accessed directly:
 
 ```javascript
-import { and, shclass } from '@ontologies/sh'
+import schema from '@ontologies/schema'
 
-// 'and' is not a JS reserved keyword
-console.log(and.value) // http://www.w3.org/ns/shacl#and
-// 'class' is a reserved keyword, so the package name is prepended to the js identifier.
-console.log(shclass.value) // http://www.w3.org/ns/shacl#class
+console.log(schema.yield) // NamedNode(http://schema.org/name)
+```
+
+When using the named exports, if a term collides with an [ES 5/6 reserved keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords)
+or certain built-in classes, the term is prepended with the symbol of the ontology:
+
+```javascript
+import { name, schemayield } from '@ontologies/schema'
+
+// 'name' is not a JS reserved keyword
+console.log(name.value) // "http://schema.org/name"
+// 'yield' is a reserved keyword, so the package name is prepended to the js identifier.
+console.log(schemayield.value) // "http://schema.org/yield"
 ```
