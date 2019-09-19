@@ -53,4 +53,5 @@ export interface OntologyProperty extends OntologyItem {
 export interface OntologyClass extends OntologyItem {
   label: SomeTerm[]
   subClassOf: NamedNode[]
+  term: string
 }

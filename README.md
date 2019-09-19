@@ -23,6 +23,31 @@ The other packages are generated from their respective ontologies, providing cli
 importable symbols and a named export `ns` with which custom additional terms can be created within
 the given namespace.
 
+### Usage
+With named exports
+
+```javascript
+import { name } from '@ontologies/schema'
+
+console.log(name) // http://schema.org/name
+```
+
+With default export
+
+```javascript
+import schema from '@ontologies/schema'
+
+console.log(schema.name) // http://schema.org/name
+```
+
+Custom terms
+
+```javascript
+import { ns } from '@ontologies/schema'
+
+console.log(ns('extension')) // http://schema.org/extension
+```
+
 ### Collisions with ES reserved keywords
 When a term from a vocabulary collides with a [reserved keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords)
 or certain built-in classes, the term is prepended with the symbol of the ontology.

@@ -7,8 +7,11 @@ import defaults from "../templates/defaults.package.json"
 import { packageTSIndexFile } from "./helpers"
 import { Ontology, OntologyItem, OntologyItemPropType } from "./types"
 
-// From https://github.com/jonschlinkert/reserved/blob/master/index.js
 const RESERVED_KEYWORDS = [
+  // Not JS spec, but reserved for custom terms
+  'ns',
+
+  // From https://github.com/jonschlinkert/reserved/blob/master/index.js
   'abstract',
   'arguments',
   'boolean',
@@ -166,6 +169,22 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       isExported: true
     }
 
+    const classes = ontology.classes.map((klass): StatementStructures => ({
+      kind: StructureKind.VariableStatement,
+      declarationKind: VariableDeclarationKind.Const,
+      declarations: [
+        {
+          kind: StructureKind.VariableDeclaration,
+          name: safeTermSymbol(klass.term),
+          initializer: `ns("${klass.term}")`,
+        }
+      ],
+      leadingTrivia: (klass.comment && klass.comment[0])
+        ? `/** ${klass.comment[0]} */\n`
+        : undefined,
+      isExported: true
+    }))
+
     const properties = ontology.properties.map((property): StatementStructures => ({
         kind: StructureKind.VariableStatement,
         declarationKind: VariableDeclarationKind.Const,
@@ -182,17 +201,21 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
         isExported: true
       }))
 
-    const propertyShorthands = ontology
-      .properties
-      .map((property) => ts.createShorthandPropertyAssignment(safeTermSymbol(property.term)))
+    const shorthandDefaultExport = [ts.createShorthandPropertyAssignment('ns')]
+      .concat(ontology
+        .classes
+        .map((property) => ts.createShorthandPropertyAssignment(safeTermSymbol(property.term))))
+      .concat(ontology
+        .properties
+        .map((property) => ts.createShorthandPropertyAssignment(safeTermSymbol(property.term))))
 
-    const defaultExport = ts.createExportDefault(ts.createObjectLiteral(propertyShorthands, true))
+    const defaultExport = ts.createExportDefault(ts.createObjectLiteral(shorthandDefaultExport, true))
 
     const printer = ts.createPrinter({
       omitTrailingSemicolon: false,
     });
 
-    const result = printer.printNode(
+    const defaultExportPrintedNode = printer.printNode(
       ts.EmitHint.Unspecified,
       defaultExport,
       ts.createSourceFile("", "", ScriptTarget.ES2019)
@@ -206,9 +229,11 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
           "\n",
           ns,
           "\n",
+          ...classes,
+          "\n",
           ...properties,
           "\n",
-          result
+          defaultExportPrintedNode
         ]
       }
     )
