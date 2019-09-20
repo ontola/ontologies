@@ -1,13 +1,15 @@
 {
-  "license": "GPL-3.0-or-later",
-  "main": "index.cjs",
   "version": "1.0.0",
+  "main": "cjs/index.js",
   "module": "index.js",
+  "sideEffects": false,
+  "license": "GPL-3.0-or-later",
   "types": "index.d.ts",
+  "homepage": "https://github.com/ontola/ontologies",
   "bugs": {
     "url": "https://github.com/ontola/ontologies/issues"
   },
   "peerDependencies": {
-    "@ontologies/core": ">1.0.0"
+    "@ontologies/core": ">1.5.0"
   }
 }

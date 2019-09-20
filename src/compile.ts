@@ -3,7 +3,7 @@ import ts, { ModuleKind } from "typescript"
 
 import tsconfig from "../tsconfig.json"
 
-import { packageTSIndexFile } from "./helpers"
+import { packageFolder, packageTSIndexFile } from './helpers'
 import { Ontology } from "./types"
 
 export const compile = (ontologies: Ontology[]): Ontology[] => {
@@ -19,6 +19,19 @@ export const compile = (ontologies: Ontology[]): Ontology[] => {
       }
     );
     program.emit();
+
+    const cjsProgram = ts.createProgram(
+      [packageTSIndexFile(ontology)],
+      {
+        ...tsconfig.compilerOptions as unknown as ts.CompilerOptions,
+        noEmit: false,
+        module: ModuleKind.CommonJS,
+        moduleResolution: ModuleResolutionKind.NodeJs,
+        declaration: false,
+        outDir: `${packageFolder(ontology)}/cjs/`
+      }
+    );
+    cjsProgram.emit();
   }
 
   return ontologies
