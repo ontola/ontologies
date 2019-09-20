@@ -6,6 +6,7 @@
   "license": "GPL-3.0-or-later",
   "types": "index.d.ts",
   "homepage": "https://github.com/ontola/ontologies",
+  "keywords": ["rdf", "schema", "ontology", "ontologies", "vocabulary", "taxonomy", "linked data", "linkeddata", "open data", "owl", "semantic", "web", "typescript", "turtle", "n-triples", "n-quads", "graph"],
   "bugs": {
     "url": "https://github.com/ontola/ontologies/issues"
   },
