@@ -4,6 +4,7 @@ import {
   Project,
   StatementStructures,
   StructureKind,
+  SyntaxKind,
   ts,
   VariableDeclarationKind,
 } from 'ts-morph'
@@ -165,6 +166,7 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       ]
     };
 
+    const nsCommentText = `Function to create arbitrary terms within the '${ontology.name}' ontology`
     const ns: StatementStructures = {
       kind: StructureKind.VariableStatement,
       declarationKind: VariableDeclarationKind.Const,
@@ -176,7 +178,7 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
         }
       ],
       isExported: true,
-      leadingTrivia: `/** Function to create arbitrary terms within the '${ontology.name}' */\n`
+      leadingTrivia: `/** ${nsCommentText} */\n`
     }
 
     const structureForTerm = (term: OntologyTerm): StatementStructures => ({
@@ -199,8 +201,16 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
     const properties = ontology.properties.map(structureForTerm)
     const otherTerms = ontology.otherTerms.map(structureForTerm)
 
+    const shorthandNSDefaultExport = ts.createShorthandPropertyAssignment('ns')
+    ts.addSyntheticLeadingComment(
+      shorthandNSDefaultExport,
+      SyntaxKind.MultiLineCommentTrivia,
+      `* ${nsCommentText} `,
+      true
+    )
+
     const defaultExportSymbols: Array<ts.ShorthandPropertyAssignment | ts.PropertyAssignment> = [
-      ts.createShorthandPropertyAssignment('ns'),
+      shorthandNSDefaultExport,
       ...[
         ...ontology.classes,
         ...ontology.properties,
@@ -208,24 +218,49 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       ]
         .flatMap<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>((property) => {
           const safeTerm = safeTermSymbol(property.term)
+          const comment = (property.comment && property.comment[0])
+            ? `* ${property.comment[0]} `
+            : undefined
+
           if (safeTerm !== property.term) {
             const nonValidIdentifier = UNSAFE_TOKENS.some((token) => property.term.includes(token))
 
             const exactPropertyName = nonValidIdentifier
               ? ts.createComputedPropertyName(ts.createLiteral(property.term))
               : property.term
+            const exactPropertyNameNode = ts.createPropertyAssignment(exactPropertyName, ts.createIdentifier(safeTerm))
+            if (comment) {
+              ts.addSyntheticLeadingComment(
+                exactPropertyNameNode,
+                SyntaxKind.MultiLineCommentTrivia,
+                comment,
+                true
+              )
+            }
 
-            const validIndentifierPropertyName = nonValidIdentifier
+            const validIdentifierPropertyName = nonValidIdentifier
               ? ts.createPropertyAssignment(safeTerm, ts.createIdentifier(safeTerm))
               : undefined
+            if (validIdentifierPropertyName && comment) {
+              ts.addSyntheticLeadingComment(
+                validIdentifierPropertyName,
+                SyntaxKind.MultiLineCommentTrivia,
+                comment,
+                true
+              )
+            }
 
             return [
-              validIndentifierPropertyName,
-              ts.createPropertyAssignment(exactPropertyName, ts.createIdentifier(safeTerm)),
+              validIdentifierPropertyName,
+              exactPropertyNameNode,
             ].filter(Boolean) as Array<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>
           }
 
-          return ts.createShorthandPropertyAssignment(safeTerm)
+          const test = ts.createShorthandPropertyAssignment(safeTerm);
+          if (comment) {
+            ts.addSyntheticLeadingComment(test, SyntaxKind.MultiLineCommentTrivia, comment, true)
+          }
+          return test
         })
     ]
 
