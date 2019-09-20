@@ -166,7 +166,8 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
           initializer: `createNS("${ontology.ns.value}")`,
         }
       ],
-      isExported: true
+      isExported: true,
+      leadingTrivia: `/** Function to create arbitrary terms within the '${ontology.name}' */\n`
     }
 
     const classes = ontology.classes.map((klass): StatementStructures => ({
