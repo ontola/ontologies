@@ -11,7 +11,12 @@ import { ScriptTarget } from "typescript/lib/tsserverlibrary"
 
 import defaults from "../templates/defaults.package.json"
 import { packageTSIndexFile } from "./helpers"
-import { Ontology, OntologyItem, OntologyItemPropType } from "./types"
+import {
+  Ontology,
+  OntologyItem,
+  OntologyItemPropType,
+  OntologyTerm,
+} from './types'
 
 const RESERVED_KEYWORDS = [
   // Not JS spec, but reserved for custom terms
@@ -143,6 +148,10 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
         humanName: ontology.name,
         ontologiesRepo: 'https://github.com/ontola/ontologies',
         ns: ontology.ns.value,
+        termCount: ontology.classes.length + ontology.properties.length + ontology.otherTerms.length,
+        classCount: ontology.classes.length,
+        propertyCount: ontology.properties.length,
+        otherTermCount: ontology.otherTerms.length,
       })
     )
 
@@ -170,41 +179,33 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       leadingTrivia: `/** Function to create arbitrary terms within the '${ontology.name}' */\n`
     }
 
-    const classes = ontology.classes.map((klass): StatementStructures => ({
+    const structureForTerm = (term: OntologyTerm): StatementStructures => ({
       kind: StructureKind.VariableStatement,
       declarationKind: VariableDeclarationKind.Const,
       declarations: [
         {
           kind: StructureKind.VariableDeclaration,
-          name: safeTermSymbol(klass.term),
-          initializer: `ns("${klass.term}")`,
+          name: safeTermSymbol(term.term),
+          initializer: `ns("${term.term}")`,
         }
       ],
-      leadingTrivia: (klass.comment && klass.comment[0])
-        ? `/** ${klass.comment[0]} */\n`
+      leadingTrivia: (term.comment && term.comment[0])
+        ? `/** ${term.comment[0]} */\n`
         : undefined,
       isExported: true
-    }))
+    })
 
-    const properties = ontology.properties.map((property): StatementStructures => ({
-        kind: StructureKind.VariableStatement,
-        declarationKind: VariableDeclarationKind.Const,
-        declarations: [
-          {
-            kind: StructureKind.VariableDeclaration,
-            name: safeTermSymbol(property.term),
-            initializer: `ns("${property.term}")`,
-          }
-        ],
-        leadingTrivia: (property.comment && property.comment[0])
-          ? `/** ${property.comment[0]} */\n`
-          : undefined,
-        isExported: true
-      }))
+    const classes = ontology.classes.map(structureForTerm)
+    const properties = ontology.properties.map(structureForTerm)
+    const otherTerms = ontology.otherTerms.map(structureForTerm)
 
     const defaultExportSymbols: Array<ts.ShorthandPropertyAssignment | ts.PropertyAssignment> = [
       ts.createShorthandPropertyAssignment('ns'),
-      ...[...ontology.classes, ...ontology.properties]
+      ...[
+        ...ontology.classes,
+        ...ontology.properties,
+        ...ontology.otherTerms,
+      ]
         .flatMap<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>((property) => {
           const safeTerm = safeTermSymbol(property.term)
           if (safeTerm !== property.term) {
@@ -251,6 +252,8 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
           ...classes,
           "\n",
           ...properties,
+          "\n",
+          ...otherTerms,
           "\n",
           defaultExportPrintedNode
         ]

@@ -16,6 +16,14 @@ LOV: [`{{lov}}`]({{lov}})
 Source: [`{{source}}`]({{source}})
 
 {{/if}}
+Total term count: {{{termCount}}}
+
+Of which classes {{{classCount}}} (including data types)
+
+Of which properties: {{{propertyCount}}}
+
+Other terms: {{{otherTermCount}}}
+
 ### About
 This readme was automatically generated, for more information see the main [ontologies repository]({{{ontologiesRepo}}}).
 

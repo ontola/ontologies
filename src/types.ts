@@ -19,7 +19,7 @@ export interface OntologyInfo {
   ontologyType?: string
 }
 
-export type OntologyItemPropType = undefined | string | SomeTerm | OntologyClass | OntologyProperty
+export type OntologyItemPropType = undefined | string | SomeTerm | OntologyTerm | OntologyClass | OntologyProperty
 export type OntologyItemProp = OntologyItemPropType | Array<OntologyItemPropType>
 
 export interface OntologyItem {
@@ -36,6 +36,7 @@ export interface Ontology extends OntologyItem {
   classes: OntologyClass[]
   lov: string
   name: string
+  otherTerms: OntologyTerm[]
   properties: OntologyProperty[]
   source: string
   spec: string
@@ -43,15 +44,16 @@ export interface Ontology extends OntologyItem {
   ns: NamedNode
 }
 
-export interface OntologyProperty extends OntologyItem {
-  domain: NamedNode[]
+export interface OntologyTerm extends OntologyItem {
   label: SomeTerm[]
-  range: NamedNode[]
   term: string
 }
 
-export interface OntologyClass extends OntologyItem {
-  label: SomeTerm[]
+export interface OntologyProperty extends OntologyTerm {
+  domain: NamedNode[]
+  range: NamedNode[]
+}
+
+export interface OntologyClass extends OntologyTerm {
   subClassOf: NamedNode[]
-  term: string
 }

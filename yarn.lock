@@ -1068,6 +1068,11 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
+http-status-codes@^1.3.2:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/http-status-codes/-/http-status-codes-1.3.2.tgz#181dfa4455ef454e5e4d827718fca3936680d10d"
+  integrity sha512-nDUtj0ltIt08tGi2VWSpSzNNFye0v3YSe9lX3lIqLTuVvvRiYCvs4QQBSHo0eomFYw1wlUuofurUAlTm+vHnXg==
+
 https-proxy-agent@^2.2.1:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.2.tgz#271ea8e90f836ac9f119daccd39c19ff7dfb0793"
@@ -1349,6 +1354,11 @@ levn@^0.3.0, levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+link-lib@^1.0.0-rc4:
+  version "1.0.0-rc4"
+  resolved "https://registry.yarnpkg.com/link-lib/-/link-lib-1.0.0-rc4.tgz#b79131b5965661acce3ddcd394bebdedbd29d143"
+  integrity sha512-bvez1TX+Z7y0INojl5MQ11ytRAo+P87iBK3sY2OqNYvdtJhQ+qH7PYl2HX+lDCf6ugVyG1jhwbcBhElf/xND2Q==
 
 lodash.sortby@^4.7.0:
   version "4.7.0"

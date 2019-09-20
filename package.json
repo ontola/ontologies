@@ -38,6 +38,8 @@
     "eslint": "^6.4.0",
     "glob": "^7.1.4",
     "handlebars": "^4.2.0",
+    "http-status-codes": "^1.3.2",
+    "link-lib": "^1.0.0-rc4",
     "n3": "^1.2.0",
     "npm-registry-fetch": "^4.0.1",
     "rdflib": "npm:link-rdflib@0.21.1-20190812T114001",
