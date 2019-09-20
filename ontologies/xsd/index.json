@@ -1,0 +1,8 @@
+{
+  "name": "XML Schema Datatypes in RDF and OWL",
+  "symbol": "xsd",
+  "ns": "http://www.w3.org/2001/XMLSchema#",
+  "lov": "https://lov.linkeddata.es/dataset/lov/vocabs/xsd",
+  "source": "https://www.w3.org/2011/rdf-wg/wiki/XSD_Datatypes",
+  "spec": "https://www.w3.org/TR/xmlschema-2/"
+}

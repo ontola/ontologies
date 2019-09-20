@@ -1,0 +1,204 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+
+<http://www.w3.org/2001/XMLSchema#> a owl:Ontology ;
+	dc:title "" ;
+	dc:description "" .
+
+xsd:string a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "string" .
+
+xsd:boolean a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "boolean" .
+
+xsd:decimal a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "decimal" .
+
+xsd:float a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "float" .
+
+xsd:double a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "double" .
+
+xsd:duration a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "duration" .
+
+xsd:dateTime a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "dateTime" .
+
+xsd:time a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "time" .
+
+xsd:date a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "date" .
+
+xsd:gYearMonth a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "gYearMonth" .
+
+xsd:gYear a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "gYear" .
+
+xsd:gMonthDay a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "gMonthDay" .
+
+xsd:gDay a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "gDay" .
+
+xsd:gMonth a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "gMonth" .
+
+xsd:hexBinary a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "hexBinary" .
+
+xsd:base64Binary a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "base64Binary" .
+
+xsd:anyURI a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "anyURI" .
+
+xsd:normalizedString a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "normalizedString" .
+
+xsd:token a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "token" .
+
+xsd:language a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "language" .
+
+xsd:NMTOKEN a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "NMTOKEN" .
+
+xsd:Name a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "Name" .
+
+xsd:NCName a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "NCName" .
+
+xsd:integer a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "integer" .
+
+xsd:nonPositiveInteger a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "nonPositiveInteger" .
+
+xsd:negativeInteger a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "negativeInteger" .
+
+xsd:long a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "long" .
+
+xsd:int a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "int" .
+
+xsd:short a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "short" .
+
+xsd:byte a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "byte" .
+
+xsd:nonNegativeInteger a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "nonNegativeInteger" .
+
+xsd:unsignedLong a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "unsignedLong" .
+
+xsd:unsignedInt a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "unsignedInt" .
+
+xsd:unsignedShort a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "unsignedShort" .
+
+xsd:unsignedByte a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "unsignedByte" .
+
+xsd:positiveInteger a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "positiveInteger" .
+
+xsd:yearMonthDuration a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "yearMonthDuration" .
+
+xsd:dayTimeDuration a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "dayTimeDuration" .
+
+xsd:dateTimeStamp a rdfs:Datatype ;
+	rdfs:subClassOf rdfs:Literal ;
+	rdfs:isDefinedBy <http://www.w3.org/2001/XMLSchema#> ;
+	rdfs:label "dateTimeStamp" .

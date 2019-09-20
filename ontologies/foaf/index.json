@@ -1,0 +1,9 @@
+{
+  "name": "Friend of a Friend (FOAF) vocabulary",
+  "symbol": "foaf",
+  "ns": "http://xmlns.com/foaf/0.1/",
+  "source": "http://xmlns.com/foaf/spec/index.rdf",
+  "spec": "http://xmlns.com/foaf/spec/",
+  "ontologyFile": "ontology.rdf",
+  "ontologyType": "application/rdf+xml"
+}
