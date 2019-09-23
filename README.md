@@ -24,6 +24,14 @@ importable symbols and a named export `ns` with which custom additional terms ca
 the given namespace.
 
 ### Usage
+Initialize using by calling `setup()` from `@ontologies/core`
+
+```javascript
+import { setup } from "@ontologies/core";
+
+setup();
+```
+
 With named exports
 
 ```javascript
@@ -46,6 +54,14 @@ Custom terms
 import { ns } from '@ontologies/schema'
 
 console.log(ns('extension')) // http://schema.org/extension
+```
+
+Use `.value` for the string representation
+
+```javascript
+import { name } from '@ontologies/schema'
+
+console.log(name.value) // "http://schema.org/name"
 ```
 
 ### Non-js symbols
