@@ -1,4 +1,4 @@
-import { NamedNode, SomeTerm } from "rdflib"
+import { NamedNode, SomeTerm } from "../core"
 
 export interface OntologyInfo {
   /** Human readable name */
@@ -17,6 +17,8 @@ export interface OntologyInfo {
   ontologyFile?: string
   /** The datatype of the ontology file */
   ontologyType?: string
+  /** The version of the package */
+  version?: string
 }
 
 export type OntologyItemPropType = undefined | string | SomeTerm | OntologyTerm | OntologyClass | OntologyProperty
@@ -42,6 +44,7 @@ export interface Ontology extends OntologyItem {
   spec: string
   symbol: string
   ns: NamedNode
+  version?: string
 }
 
 export interface OntologyTerm extends OntologyItem {

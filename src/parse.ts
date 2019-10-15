@@ -1,56 +1,51 @@
 import * as  fs from "fs"
-import { RDFStore, Schema } from 'link-lib'
+import glob from "glob"
+import { RDFStore, Schema, rdflib } from "link-lib"
+import * as N3 from "n3"
 import * as path from "path"
 
-import glob from "glob"
-import * as N3 from "n3"
-import {
-  parse as parseRDF,
-  IndexedFormula,
-  Namespace,
-  SomeTerm,
+import rdfFactory, {
+  createNS,
   NamedNode,
-  SomeNode,
-  Statement,
-  BlankNode,
-  Literal,
-} from 'rdflib'
-
-import { PlainFactory, Quad } from "../core"
-
+  Node,
+  Quad,
+  SomeTerm,
+  isNamedNode,
+  isLiteral,
+} from "../core";
 import {
   Ontology,
   OntologyClass,
   OntologyInfo,
   OntologyProperty,
   OntologyTerm,
-} from './types'
+} from "./types"
 
-const rdf = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-const rdfs = Namespace("http://www.w3.org/2000/01/rdf-schema#")
-const owl = Namespace("http://www.w3.org/2002/07/owl#")
-const classTypes: SomeNode[] = [
+const rdf = createNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+const rdfs = createNS("http://www.w3.org/2000/01/rdf-schema#")
+const owl = createNS("http://www.w3.org/2002/07/owl#")
+const classTypes: Node[] = [
   rdfs("Class"),
   rdfs("Datatype"),
   rdf("List"),
   owl("Class"),
-];
-const propertyTypes: SomeNode[] = [
+]
+const propertyTypes: Node[] = [
   rdf("Property"),
   owl("ObjectProperty"),
   owl("DatatypeProperty"),
-];
+]
 
-const isInNamespaceButNotIdentity = (node: SomeNode, ns: string): boolean => node.value.startsWith(ns) && node.value !== ns
+const isInNamespaceButNotIdentity = (node: Node, ns: string): boolean => node.value.startsWith(ns) && node.value !== ns
 
 const filterUnique = <U>(value: U, index: number, self: U[]) => {
   const selfIndex = self.findIndex((s: U) =>
-    PlainFactory.equals(s as unknown as Quad, value as unknown as Quad))
+    rdfFactory.equals(s as unknown as Quad, value as unknown as Quad))
 
   return selfIndex === index
 }
 
-function parseOntology(packageFile: string, ontologyInfo: OntologyInfo): Promise<Statement[]> {
+function parseOntology(packageFile: string, ontologyInfo: OntologyInfo): Promise<Quad[]> {
   return new Promise((resolve) => {
     const file = ontologyInfo.ontologyFile || "ontology.ttl"
     const fileType = ontologyInfo.ontologyType || "text/turtle"
@@ -60,44 +55,44 @@ function parseOntology(packageFile: string, ontologyInfo: OntologyInfo): Promise
       const statements = new N3.Parser()
         .parse(ontologyFile)
         .map((quad) => {
-          const subject = quad.subject.termType === "NamedNode"
-            ? new NamedNode(quad.subject.value)
-            : new BlankNode(quad.subject.value)
-          const predicate = new NamedNode(quad.predicate.value)
-          const obj = quad.object.termType === "Literal"
-            ? new Literal(
+          const subject = isNamedNode(quad.subject)
+            ? rdfFactory.namedNode(quad.subject.value)
+            : rdfFactory.blankNode(quad.subject.value)
+          const predicate = rdfFactory.namedNode(quad.predicate.value)
+          const obj = isLiteral(quad.object)
+            ? rdfFactory.literal(
               quad.object.value,
               quad.object.language,
               quad.object.datatype
-                ? new NamedNode(quad.object.datatype.value)
+                ? rdfFactory.namedNode(quad.object.datatype.value)
                 : undefined
             )
-            : quad.object.termType === "NamedNode"
-              ? new NamedNode(quad.object.value)
-              : new BlankNode(quad.object.value)
+            : isNamedNode(quad.object)
+              ? rdfFactory.namedNode(quad.object.value)
+              : rdfFactory.blankNode(quad.object.value)
 
-          return new Statement(subject, predicate, obj)
+          return rdfFactory.quad(subject, predicate, obj)
         })
       resolve(statements)
     } else {
-      const ontology = new IndexedFormula()
-      parseRDF(ontologyFile, ontology, ontologyInfo.ns, fileType, () => {
+      const ontology = new rdflib.IndexedFormula()
+      rdflib.RDFparse(ontologyFile, ontology, ontologyInfo.ns, fileType, () => {
         resolve(ontology.statements)
       })
     }
   })
 }
 
-function uniqueResourcesOfType(ontologyData: Statement[],
+function uniqueResourcesOfType(ontologyData: Quad[],
                                ontologyInfo: OntologyInfo,
-                               types: SomeNode[]): SomeNode[] {
+                               types: Node[]): Node[] {
   const schema = new Schema(new RDFStore())
   schema.addStatements(ontologyData)
 
   return ontologyData
     .filter((st) => {
-      if (isInNamespaceButNotIdentity(st.subject, ontologyInfo.ns) && st.predicate === rdf("type")) {
-        return types.some((type) => schema.isInstanceOf(st.subject.sI, type.sI))
+      if (isInNamespaceButNotIdentity(st.subject, ontologyInfo.ns) && rdfFactory.equals(st.predicate, rdf("type"))) {
+        return types.some((type) => schema.isInstanceOf(rdfFactory.id(st.subject), rdfFactory.id(type)))
       }
       return false
     })
@@ -105,16 +100,16 @@ function uniqueResourcesOfType(ontologyData: Statement[],
     .filter(filterUnique)
 }
 
-const getProperty = (ontologyData: Statement[]) => (subject: SomeNode, prop: NamedNode): SomeTerm[] => {
+const getProperty = (ontologyData: Quad[]) => (subject: Node, prop: NamedNode): SomeTerm[] => {
   return ontologyData
-      .filter((s) => PlainFactory.equals(s.subject, subject) && PlainFactory.equals(s.predicate, prop))
+      .filter((s) => rdfFactory.equals(s.subject, subject) && rdfFactory.equals(s.predicate, prop))
       .map((s) => s.object);
 }
 
 const getOntologyTerm = (
-  subject: SomeNode,
+  subject: Node,
   ontologyInfo: OntologyInfo,
-  getProp: (s: SomeNode, p: NamedNode) => SomeTerm[]
+  getProp: (s: Node, p: NamedNode) => SomeTerm[]
 ): OntologyTerm => ({
   iri: subject,
   label: getProp(subject, rdfs("label")),
@@ -124,17 +119,17 @@ const getOntologyTerm = (
   term: subject.value.substring(ontologyInfo.ns.length),
 });
 
-function getClasses(ontologyData: Statement[],  ontologyInfo: OntologyInfo): OntologyClass[] {
+function getClasses(ontologyData: Quad[],  ontologyInfo: OntologyInfo): OntologyClass[] {
   const getProp = getProperty(ontologyData);
 
   return uniqueResourcesOfType(ontologyData, ontologyInfo, classTypes)
-    .map((subject: SomeNode) => ({
+    .map((subject: Node) => ({
       ...getOntologyTerm(subject, ontologyInfo, getProp),
-      subClassOf: getProp(subject, rdfs("subClassOf")).filter(term => term.termType === "NamedNode") as NamedNode[],
+      subClassOf: getProp(subject, rdfs("subClassOf")).filter(term => isNamedNode(term)) as NamedNode[],
     }))
 }
 
-function getOtherTerms(ontologyData: Statement[], ontologyInfo: OntologyInfo): OntologyTerm[] {
+function getOtherTerms(ontologyData: Quad[], ontologyInfo: OntologyInfo): OntologyTerm[] {
   const getProp = getProperty(ontologyData)
   const schema = new Schema(new RDFStore())
   schema.addStatements(ontologyData)
@@ -142,27 +137,29 @@ function getOtherTerms(ontologyData: Statement[], ontologyInfo: OntologyInfo): O
   return ontologyData
     .filter((st) => {
       if (isInNamespaceButNotIdentity(st.subject, ontologyInfo.ns)
-        && st.predicate === rdf("type")
-        && st.object.termType !== "Literal") {
-
-        return ![...propertyTypes, ...classTypes].some((type) => schema.isInstanceOf(st.subject.sI, type.sI))
+        && rdfFactory.equals(st.predicate, rdf("type"))
+        && !isLiteral(st.object)) {
+        return ![
+          ...propertyTypes,
+          ...classTypes
+        ].some((type) => schema.isInstanceOf(rdfFactory.id(st.subject), rdfFactory.id(type)))
       }
 
       return false
     })
     .map((s) => s.subject)
     .filter(filterUnique)
-    .map<OntologyTerm>((subject: SomeNode) => getOntologyTerm(subject, ontologyInfo, getProp))
+    .map<OntologyTerm>((subject: Node) => getOntologyTerm(subject, ontologyInfo, getProp))
 }
 
-function getProperties(ontologyData: Statement[], ontologyInfo: OntologyInfo): OntologyProperty[] {
+function getProperties(ontologyData: Quad[], ontologyInfo: OntologyInfo): OntologyProperty[] {
   const getProp = getProperty(ontologyData);
 
   return uniqueResourcesOfType(ontologyData, ontologyInfo, propertyTypes)
-    .map((subject: SomeNode) => ({
+    .map((subject: Node) => ({
       ...getOntologyTerm(subject, ontologyInfo, getProp),
-      domain: getProp(subject, rdfs("domain")).filter(term => term.termType === "NamedNode") as NamedNode[],
-      range: getProp(subject, rdfs("range")).filter(term => term.termType === "NamedNode") as NamedNode[],
+      domain: getProp(subject, rdfs("domain")).filter(term => isNamedNode(term)) as NamedNode[],
+      range: getProp(subject, rdfs("range")).filter(term => isNamedNode(term)) as NamedNode[],
     }))
 }
 
@@ -183,7 +180,7 @@ export function parse(): Promise<Ontology[]> {
 
         const ontology = {
           name: ontologyInfo.name,
-          ns: new NamedNode(ontologyInfo.ns),
+          ns: rdfFactory.namedNode(ontologyInfo.ns),
           source: ontologyInfo.source,
           lov: ontologyInfo.lov,
           spec: ontologyInfo.spec,
@@ -191,6 +188,7 @@ export function parse(): Promise<Ontology[]> {
           classes: getClasses(ontologyData, ontologyInfo),
           otherTerms: getOtherTerms(ontologyData, ontologyInfo),
           properties: getProperties(ontologyData, ontologyInfo),
+          version: ontologyInfo.version,
         };
 
         ontologies.push(ontology)

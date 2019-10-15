@@ -1,3 +1,5 @@
+import "./useFactory";
+
 import { compile } from "./compile"
 import { generate } from "./generate"
 import { parse } from "./parse"

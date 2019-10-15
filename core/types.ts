@@ -1,13 +1,22 @@
+export const enum TermType {
+  NamedNode = "NamedNode",
+  BlankNode = "BlankNode",
+  Literal = "Literal",
+}
+export type TermTypes = "NamedNode" | "BlankNode" | "Literal"
+
+export type Indexable = number | string | unknown
 
 export interface RDFObject {
-  termType: "NamedNode" | "BlankNode" | "Literal" | "Quad"
+  id?: Indexable
+  termType?: TermType | TermTypes | string
 }
 
 /**
  * The overarching interface for RDF components (or terms).
  */
 export interface Term extends RDFObject {
-  termType: "NamedNode" | "BlankNode" | "Literal"
+  termType: TermType | TermTypes | string
   value: string
 }
 
@@ -61,20 +70,78 @@ export interface Literal extends Term {
   value: string
 }
 
-export interface Quad extends RDFObject {
-  termType: "Quad"
+export interface Quad {
   subject: Node
   predicate: NamedNode
-  object: Term
-  graph: NamedNode | undefined
+  object: SomeTerm
+  graph: Node
 }
+
+export interface Variable extends Term {
+  termType: "Variable"
+  value: string
+}
+
+export type SomeTerm = NamedNode | BlankNode | Literal
 
 /**
  * A quad formatted as an array.
  */
-export type Quadruple = [ Node, NamedNode, Term, NamedNode ]
+export type Quadruple = [ Node, NamedNode, SomeTerm, Node ]
 
-export type Comparable = RDFObject | Quadruple
+export const enum QuadPosition {
+  subject = 0,
+  predicate = 1,
+  object = 2,
+  graph = 3,
+}
+
+export const enum Feature {
+  /** Whether the factory supports termType:Collection terms */
+  collections = "COLLECTIONS",
+  /** Whether the factory supports termType:DefaultGraph terms */
+  defaultGraphType = "DEFAULT_GRAPH_TYPE",
+  /** Whether the factory supports equals on produced instances */
+  equalsMethod = "EQUALS_METHOD",
+  /**
+   * Whether the factory is an {IdentityFactory}, so it allows reverse lookups to be done with
+   * {fromId}.
+   */
+  identity = "IDENTITY",
+  /** Whether the factory supports mapping ids back to instances */
+  nodeLookup = "NODE_LOOKUP",
+  /** Whether the factory supports termType:Variable terms */
+  variableType = "VARIABLE_TYPE",
+}
+
+export type Comparable = NamedNode | BlankNode | Literal | Quad | Quadruple | undefined | null
+
+export type SupportTable = Record<Feature, boolean>
+
+export interface DataFactoryOpts {
+  bnIndex?: number
+  supports?: SupportTable
+}
+
+export interface LowLevelStore {
+  rdfFactory: DataFactory
+
+  add(subject: Node, predicate: NamedNode, object: Term, graph?: Node): void
+
+  addQuad(quad: Quad): Quad
+  addQuads(quad: Quad[]): Quad[]
+
+  addQuadruple(quadruple: Quadruple): Quadruple
+  addQuadruples(quadruple: Quadruple[]): Quadruple[]
+
+  removeQuad(quad: Quad): void
+  removeQuads(quad: Quad[]): void
+
+  match(subj: Node | undefined | null,
+        pred?: NamedNode | undefined | null,
+        obj?: Term | undefined | null,
+        why?: Node | undefined | null): Quad[]
+}
 
 /**
  * Defines a strict subset of the DataFactory as defined in the RDF/JS: Data model specification
@@ -83,26 +150,79 @@ export type Comparable = RDFObject | Quadruple
  *
  * bnIndex is optional but useful.
  */
-export interface DataFactory {
+export interface DataFactory<FactoryTypes = NamedNode | BlankNode | Literal | Quad | Quadruple> {
   bnIndex?: number
 
-  namedNode (value: string): NamedNode
+  supports: SupportTable
 
-  blankNode (value?: string): BlankNode
+  namedNode(value: string): NamedNode
 
-  literal (value: string, languageOrDatatype: string | NamedNode): Literal
+  blankNode(value?: string): BlankNode
 
-  defaultGraph (): NamedNode
+  literal(value: string, languageOrDatatype?: string | NamedNode): Literal
 
-  quad (subject: Node, predicate: NamedNode, object: Term, graph?: NamedNode): Quad
+  literal(value: unknown): Literal
 
-  quadruple (subject: Node, predicate: NamedNode, object: Term, graph?: NamedNode): Quadruple
+  defaultGraph(): NamedNode
 
-  fromTerm (original: Literal | Term): Term
+  quad(
+    subject: Node,
+    predicate: NamedNode,
+    object: Term,
+    graph?: NamedNode
+  ): Quad
 
-  fromQuad (original: Quad): Quad
+  isQuad(obj: any): obj is Quad
 
-  equals (a: Comparable, b: Comparable): boolean
+  quadruple(
+    subject: Node,
+    predicate: NamedNode,
+    object: Term,
+    graph?: NamedNode,
+  ): Quadruple
+
+  fromTerm(original: Literal | Term): Term
+
+  fromQuad(original: Quad): Quad
+
+  fromQdr(original: Quadruple): Quad
+
+  qdrFromQuad(original: Quad): Quadruple
+
+  qdrFromQdr(original: Quadruple): Quadruple
+
+  equals(a: Comparable, b: Comparable): boolean
+
+  /**
+   * Generates a unique session-idempotent identifier for the given object.
+   *
+   * @example NQ serialization (reversible from value)
+   * @example MD5 hash of termType + value (irreversible from value, map needed)
+   *
+   * @return {Indexable} A unique value which must also be a valid JS object key type.
+   */
+  id(obj: FactoryTypes): Indexable | unknown
+
+  find?(id: Indexable | unknown): Term
+
+  toNQ(term: FactoryTypes): string
+}
+
+/**
+ * Factory type which supports reverse id lookups.
+ *
+ * It should be able to resolve the value for any given id which it handed out. Passing an id not
+ * generated by the same instance might result in a value or an exception depending on the
+ * implementation.
+ */
+export interface IdentityFactory<
+  IndexType,
+  FactoryTypes = NamedNode | BlankNode | Literal | Quad | Quadruple
+> extends DataFactory<FactoryTypes> {
+
+  fromId(id: IndexType): FactoryTypes;
+
+  id(obj: FactoryTypes): number;
 }
 
 export type Namespace = (term:string) => NamedNode

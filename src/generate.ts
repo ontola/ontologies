@@ -97,10 +97,12 @@ const RESERVED_KEYWORDS = [
   'isNaN',
   'isPrototypeOf',
   'NaN',
+  /** Causes problems in Nodejs */
+  'Object',
   'prototype',
   'undefined',
   'valueOf',
-]
+];
 
 const UNSAFE_TOKENS = ['-']
 
@@ -134,6 +136,7 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       {
         name: `@ontologies/${ontology.symbol}`,
         description: firstValue(ontology, 'label'),
+        version: ontology.version || defaults.version
       }
     )
     packages.createSourceFile(
@@ -192,7 +195,7 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
         }
       ],
       leadingTrivia: (term.comment && term.comment[0])
-        ? `/** ${term.comment[0]} */\n`
+        ? `/** ${term.comment[0].value} */\n`
         : undefined,
       isExported: true
     })
@@ -219,7 +222,7 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
         .flatMap<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>((property) => {
           const safeTerm = safeTermSymbol(property.term)
           const comment = (property.comment && property.comment[0])
-            ? `* ${property.comment[0]} `
+            ? `* ${property.comment[0].value} `
             : undefined
 
           if (safeTerm !== property.term) {
