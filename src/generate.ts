@@ -107,7 +107,7 @@ const RESERVED_KEYWORDS = [
 const UNSAFE_TOKENS = ['-']
 
 const firstValue = (obj: OntologyItem, property: string): OntologyItemPropType => {
-  if (obj && Object.prototype.hasOwnProperty.call(obj, property)) {
+  if (typeof obj === "object" && obj !== null && property in obj) {
     const prop = obj[property]
 
     return Array.isArray(prop) ? prop[0] : prop

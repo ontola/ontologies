@@ -35,10 +35,6 @@ function equals(a: Comparable, b: Comparable): boolean {
     return a === b
   }
 
-  if (Object.prototype.hasOwnProperty.call(a, 'equals')) {
-    return (a as any).equals(b)
-  }
-
   if (Array.isArray(a) || Array.isArray(b)) {
     if (!(Array.isArray(a) && Array.isArray(b))) {
       return false
@@ -113,13 +109,13 @@ export class PlainFactory implements DataFactory {
    * Checks if the object {obj} is a Quad.
    */
   public static isQuad(obj: any): obj is Quad {
-    if (Array.isArray(obj) || !obj) {
+    if (Array.isArray(obj) || typeof obj !== "object" || obj === null) {
       return false
     }
 
-    return !!(Object.prototype.hasOwnProperty.call(obj, "subject")
-      && Object.prototype.hasOwnProperty.call(obj, "predicate")
-      && Object.prototype.hasOwnProperty.call(obj, "object"))
+    return !!("subject" in obj
+      && "predicate" in obj
+      && "object" in obj)
   }
 
   public namedNode(value: string): NamedNode {

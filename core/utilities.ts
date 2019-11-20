@@ -1,7 +1,7 @@
 import { BlankNode, Literal, NamedNode, Node, Quad, SomeTerm, Term, TermType } from "./types";
 
 export function isTerm(obj: any): obj is Term {
-  return obj && Object.prototype.hasOwnProperty.call(obj, "termType")
+  return typeof obj === "object" && obj !== null && "termType" in obj
 }
 
 export function isNamedNode(obj: any): obj is NamedNode {
@@ -32,7 +32,7 @@ export function isNode(obj: any): obj is Node {
 }
 
 export function isQuad (obj: any): obj is Quad {
-  return obj && Object.prototype.hasOwnProperty.call(obj, "subject")
+  return typeof obj === "object" && obj !== null && "subject" in obj
 }
 
 export function doc (node: NamedNode) {
