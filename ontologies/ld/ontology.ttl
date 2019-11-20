@@ -1,0 +1,37 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix ld: <http://purl.org/linked-delta/> .
+
+<http://purl.org/linked-delta/> a owl:Ontology ;
+	dc:title "The Linked Delta Ontology" ;
+	dc:description "" .
+
+ld:DeltaGraph a rdfs:Class ;
+	rdfs:label "The class of delta processing graphs" .
+
+ld:add a ld:DeltaGraph, owl:NamedIndividual ;
+	rdfs:label "Add" ;
+	rdfs:comment "Adds the statement to the store, without duplication." .
+
+ld:purge a ld:DeltaGraph, owl:NamedIndividual ;
+	rdfs:label "Purge" ;
+	rdfs:comment "Removes the entire subject from the store." .
+
+ld:remove a ld:DeltaGraph, owl:NamedIndividual ;
+	rdfs:label "Remove" ;
+	rdfs:comment "Removes all (subject,predicate,) matches from the store." .
+
+ld:replace a ld:DeltaGraph, owl:NamedIndividual ;
+	rdfs:label "Replace" ;
+	rdfs:comment "Replaces the (subject, predicate,) with the one(s) in this delta." .
+
+ld:slice a ld:DeltaGraph, owl:NamedIndividual ;
+	rdfs:label "Slice" ;
+	rdfs:comment "Removes all (subject,predicate,object) matches from the store." .
+
+ld:supplant a ld:DeltaGraph, owl:NamedIndividual ;
+	rdfs:label "Supplant" ;
+	rdfs:comment "Removes all statements of (subject,,) from the store and replaces them with those in the delta." .
