@@ -17,8 +17,8 @@ export const compile = (ontologies: Ontology[]): Ontology[] => {
         moduleResolution: ModuleResolutionKind.NodeJs,
         declaration: true,
       }
-    );
-    program.emit();
+    )
+    program.emit()
 
     const cjsProgram = ts.createProgram(
       [packageTSIndexFile(ontology)],
@@ -30,8 +30,8 @@ export const compile = (ontologies: Ontology[]): Ontology[] => {
         declaration: false,
         outDir: `${packageFolder(ontology)}/cjs/`
       }
-    );
-    cjsProgram.emit();
+    )
+    cjsProgram.emit()
   }
 
   return ontologies

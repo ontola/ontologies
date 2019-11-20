@@ -212,59 +212,60 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       true
     )
 
+    const shorthandTermsDefaultExport = [
+      ...ontology.classes,
+      ...ontology.properties,
+      ...ontology.otherTerms,
+    ].flatMap<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>((property) => {
+        const safeTerm = safeTermSymbol(property.term)
+        const comment = (property.comment && property.comment[0])
+          ? `* ${property.comment[0].value} `
+          : undefined
+
+        if (safeTerm !== property.term) {
+          const nonValidIdentifier = UNSAFE_TOKENS.some((token) => property.term.includes(token))
+
+          const exactPropertyName = nonValidIdentifier
+            ? ts.createComputedPropertyName(ts.createLiteral(property.term))
+            : property.term
+          const exactPropertyNameNode = ts.createPropertyAssignment(exactPropertyName, ts.createIdentifier(safeTerm))
+          if (comment) {
+            ts.addSyntheticLeadingComment(
+              exactPropertyNameNode,
+              SyntaxKind.MultiLineCommentTrivia,
+              comment,
+              true
+            )
+          }
+
+          const validIdentifierPropertyName = nonValidIdentifier
+            ? ts.createPropertyAssignment(safeTerm, ts.createIdentifier(safeTerm))
+            : undefined
+          if (validIdentifierPropertyName && comment) {
+            ts.addSyntheticLeadingComment(
+              validIdentifierPropertyName,
+              SyntaxKind.MultiLineCommentTrivia,
+              comment,
+              true
+            )
+          }
+
+          return [
+            validIdentifierPropertyName,
+            exactPropertyNameNode,
+          ].filter(Boolean) as Array<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>
+        }
+
+        const test = ts.createShorthandPropertyAssignment(safeTerm);
+        if (comment) {
+          ts.addSyntheticLeadingComment(test, SyntaxKind.MultiLineCommentTrivia, comment, true)
+        }
+        return test
+      })
+
     const defaultExportSymbols: Array<ts.ShorthandPropertyAssignment | ts.PropertyAssignment> = [
       shorthandNSDefaultExport,
-      ...[
-        ...ontology.classes,
-        ...ontology.properties,
-        ...ontology.otherTerms,
-      ]
-        .flatMap<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>((property) => {
-          const safeTerm = safeTermSymbol(property.term)
-          const comment = (property.comment && property.comment[0])
-            ? `* ${property.comment[0].value} `
-            : undefined
-
-          if (safeTerm !== property.term) {
-            const nonValidIdentifier = UNSAFE_TOKENS.some((token) => property.term.includes(token))
-
-            const exactPropertyName = nonValidIdentifier
-              ? ts.createComputedPropertyName(ts.createLiteral(property.term))
-              : property.term
-            const exactPropertyNameNode = ts.createPropertyAssignment(exactPropertyName, ts.createIdentifier(safeTerm))
-            if (comment) {
-              ts.addSyntheticLeadingComment(
-                exactPropertyNameNode,
-                SyntaxKind.MultiLineCommentTrivia,
-                comment,
-                true
-              )
-            }
-
-            const validIdentifierPropertyName = nonValidIdentifier
-              ? ts.createPropertyAssignment(safeTerm, ts.createIdentifier(safeTerm))
-              : undefined
-            if (validIdentifierPropertyName && comment) {
-              ts.addSyntheticLeadingComment(
-                validIdentifierPropertyName,
-                SyntaxKind.MultiLineCommentTrivia,
-                comment,
-                true
-              )
-            }
-
-            return [
-              validIdentifierPropertyName,
-              exactPropertyNameNode,
-            ].filter(Boolean) as Array<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>
-          }
-
-          const test = ts.createShorthandPropertyAssignment(safeTerm);
-          if (comment) {
-            ts.addSyntheticLeadingComment(test, SyntaxKind.MultiLineCommentTrivia, comment, true)
-          }
-          return test
-        })
+      ...shorthandTermsDefaultExport,
     ]
 
     const defaultExport = ts.createExportDefault(ts.createObjectLiteral(defaultExportSymbols, true))
@@ -284,15 +285,15 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       {
         statements: [
           rdfImport,
-          "\n",
+          "\n\n",
           ns,
-          "\n",
+          "\n\n/* Classes */\n",
           ...classes,
-          "\n",
+          "\n\n/* Properties */\n",
           ...properties,
-          "\n",
+          "\n\n/* Other terms */\n",
           ...otherTerms,
-          "\n",
+          "\n\n",
           defaultExportPrintedNode
         ]
       }

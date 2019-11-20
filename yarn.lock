@@ -61,25 +61,17 @@
     "@nodelib/fs.scandir" "2.1.1"
     fastq "^1.6.0"
 
-"@ontola/memoized-hash-factory@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@ontola/memoized-hash-factory/-/memoized-hash-factory-1.0.1.tgz#2059e610e794c2a8b18d2d05069946a1c1f281c8"
-  integrity sha512-ChEXZXnf0zzLiVWPnXtUn/GsqsuiaS9fspS54TGNcRQ7cep3CiAsXRmHGhKxuoJ5CME6InKoA40L4ogKkTKarg==
+"@ontola/memoized-hash-factory@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@ontola/memoized-hash-factory/-/memoized-hash-factory-1.1.1.tgz#c9b9df851aaf52a97be81e9f19538157b054a453"
+  integrity sha512-A91NfO3tv0+NXTvc6u3QsDXMGI57n4mk9IML1Fu2oBypjL4hpolmFWHZSGdhVKVznoeJowXjtBZ2yaYIm5Vf3A==
   dependencies:
-    "@ontologies/core" "1.5.2-strict-15"
     murmurhash-js "^1.0.0"
 
-"@ontologies/core@1.5.2-strict-15":
-  version "1.5.2-strict-15"
-  resolved "https://registry.yarnpkg.com/@ontologies/core/-/core-1.5.2-strict-15.tgz#2d3510ca2633748b7b7cfe0d3b64c31fad571d74"
-  integrity sha512-CAT55rywpOREF/POqLpvGvlWM3RMzGNn8llE5L+15laOVdaJbxdtP4H/qdm/uHrL/kaRFn9e+Guizm2XUfAnIg==
-  dependencies:
-    "@ungap/global-this" "^0.3.1"
-
-"@ontologies/core@=1.5.2-strict-17":
-  version "1.5.2-strict-17"
-  resolved "https://registry.yarnpkg.com/@ontologies/core/-/core-1.5.2-strict-17.tgz#37b29ec9b1648f2df88a9f8e00fa5a6582a38742"
-  integrity sha512-aIkGvMvR+KAk4jduMedamaM2YiUbzjMImMk2xhCWQ6cN7tFZe6/3aq9H8qy62ixXnjig7VOhnJ/EVUMCEETtag==
+"@ontologies/core@=1.5.2-strict-20":
+  version "1.5.2-strict-20"
+  resolved "https://registry.yarnpkg.com/@ontologies/core/-/core-1.5.2-strict-20.tgz#60ad96c2748446281c16004170e7c9dee9d80f8b"
+  integrity sha512-1u6sgoT4EvcaRtfGnM9lyAa9BE6xtyg3Mqzk430R5f/vztU+fOc8nTKmlV8KIRxowzKZi124EJ76pI9cFk+8Fg==
   dependencies:
     "@ungap/global-this" "^0.3.1"
 
@@ -1385,10 +1377,10 @@ levn@^0.3.0, levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-link-lib@=1.0.0-rc4-datafactory-13:
-  version "1.0.0-rc4-datafactory-13"
-  resolved "https://registry.yarnpkg.com/link-lib/-/link-lib-1.0.0-rc4-datafactory-13.tgz#1b25793a2b5244ae241924bfbd5063ab4f669e7a"
-  integrity sha512-b2IsUs2MZiR0JDAThbR8eH7TjVWww2Y6loU/i3C+4qiwTzgquXZrchw01woq8eGUfKmIwjm36BoQldRVZ6UG2A==
+link-lib@=1.0.0-rc4-datafactory-15:
+  version "1.0.0-rc4-datafactory-15"
+  resolved "https://registry.yarnpkg.com/link-lib/-/link-lib-1.0.0-rc4-datafactory-15.tgz#71679c0d8b0b4fbf13c84ce4f26386396070c8a4"
+  integrity sha512-DKJv/5tNsila/hjoLVCnOHkoo8ssHBjn93haTpL2dclBMMKQsInog46BkpzehP3+pO5HmbtbyzM4ORWhhDyGVg==
   dependencies:
     murmurhash-js "^1.0.0"
 
@@ -1553,6 +1545,11 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
+
+n-quads-parser@=2.0.3-ontologies-2:
+  version "2.0.3-ontologies-2"
+  resolved "https://registry.yarnpkg.com/n-quads-parser/-/n-quads-parser-2.0.3-ontologies-2.tgz#1d144b792d1989f318b8889d7b8fb7c7dd1c11a7"
+  integrity sha512-6Yf8FSUm1Ys3AuvR1tOFKitQRMoDQF1xwMuY17678GzvO909fbFHXuvAMW0zZ2+WvRGlm19RwEnoQ+ETzIqKQA==
 
 n3@^1.0.3, n3@^1.2.0:
   version "1.2.0"
@@ -1815,7 +1812,7 @@ rdf-canonize@^1.0.2:
     node-forge "^0.8.1"
     semver "^5.6.0"
 
-rdflib@^1.0.7-0:
+rdflib@=1.0.7-0:
   version "1.0.7-0"
   resolved "https://registry.yarnpkg.com/rdflib/-/rdflib-1.0.7-0.tgz#42139c81c7f498c192e32b09b1218b9f54287438"
   integrity sha512-0mVSFBvS1zvmMw13QgAC113IS0XHnQuESjxoObftuk1zttrrFFcPQxLH3BR74EjHKwPyQ8fPSl5Fna8qYdEcRA==
@@ -2280,10 +2277,10 @@ ts-morph@^4.0.1:
     multimatch "^4.0.0"
     typescript "^3.0.1"
 
-ts-node@^8.4.1:
-  version "8.4.1"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.4.1.tgz#270b0dba16e8723c9fa4f9b4775d3810fd994b4f"
-  integrity sha512-5LpRN+mTiCs7lI5EtbXmF/HfMeCjzt7DH9CZwtkr6SywStrNQC723wG+aOWFiLNn7zT3kD/RnFqi3ZUfr4l5Qw==
+ts-node@^8.5.2:
+  version "8.5.2"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.5.2.tgz#434f6c893bafe501a30b32ac94ee36809ba2adce"
+  integrity sha512-W1DK/a6BGoV/D4x/SXXm6TSQx6q3blECUzd5TN+j56YEMX3yPVMpHsICLedUw3DvGF3aTQ8hfdR9AKMaHjIi+A==
   dependencies:
     arg "^4.1.0"
     diff "^4.0.1"
@@ -2325,10 +2322,10 @@ typescript@^3.0.1:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
   integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
 
-typescript@^3.6.3:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.3.tgz#fea942fabb20f7e1ca7164ff626f1a9f3f70b4da"
-  integrity sha512-N7bceJL1CtRQ2RiG0AQME13ksR7DiuQh/QehubYcghzv20tnh+MQnQIuJddTmsbqYj+dztchykemz0zFzlvdQw==
+typescript@^3.7.2:
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
+  integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
 
 uglify-js@^3.1.4:
   version "3.6.0"

@@ -44,7 +44,7 @@ console.log(vocTerm) // { termType: 'NamedNode', value: "{{ns}}vocTerm" }
 Use the `ns` function when missing a term or when using custom extensions
 
 ```javascript
-import {{symbol}} from '@ontologies/{{symbol}}';
+import {{symbol}} from '@ontologies/{{symbol}}'
 
 console.log({{symbol}}.ns('myTerm')) // { termType: 'NamedNode', value: "{{ns}}myTerm" }
 ```
