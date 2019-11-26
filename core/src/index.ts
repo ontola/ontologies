@@ -1,5 +1,6 @@
-import "@ungap/global-this"
-import { DefaultFactory, PlainFactory } from "./PlainFactory"
+import "@ungap/global-this";
+
+import { DefaultFactory, PlainFactory } from "./PlainFactory";
 import {
   DataFactory,
   IdentityFactory,
@@ -7,62 +8,62 @@ import {
   Namespace,
 } from "./types";
 
-let setup: (factory?: DataFactory, override?: boolean) => void
-let globalFactory: DataFactory & any
-let globalSymbol: any
+let setup: (factory?: DataFactory, override?: boolean) => void;
+let globalFactory: DataFactory & any;
+let globalSymbol: any;
 
 if (typeof Symbol !== "undefined") {
-  const rdfFactory: unique symbol = Symbol.for('rdfFactory')
+  const rdfFactory: unique symbol = Symbol.for('rdfFactory');
 
   setup = function setup(factory = DefaultFactory, override = true) {
     if (typeof (globalThis as any)[rdfFactory] === "undefined" || override) {
-      (globalThis as any)[rdfFactory] = factory
-      globalFactory = factory
+      (globalThis as any)[rdfFactory] = factory;
+      globalFactory = factory;
     } else if (typeof globalFactory === "undefined" || override) {
-      globalFactory = factory
+      globalFactory = factory;
     }
-  }
+  };
 
-  globalFactory = (globalThis as any)[rdfFactory]
+  globalFactory = (globalThis as any)[rdfFactory];
   globalSymbol = rdfFactory;
 } else {
-  const rdfFactory = 'rdfFactory'
+  const rdfFactory = 'rdfFactory';
 
   setup = function setup(factory = DefaultFactory, override = true) {
     if (typeof (globalThis as any)[rdfFactory] === "undefined" || override) {
-      (globalThis as any)[rdfFactory] = factory
-      globalFactory = factory
+      (globalThis as any)[rdfFactory] = factory;
+      globalFactory = factory;
     } else if (typeof globalFactory === "undefined" || override) {
-      globalFactory = factory
+      globalFactory = factory;
     }
-  }
+  };
 
   globalSymbol = rdfFactory;
-  globalFactory = (globalThis as any)[rdfFactory]
+  globalFactory = (globalThis as any)[rdfFactory];
 }
 
 export const createNS = (ns: string): Namespace =>
   (term: string): NamedNode =>
-    globalFactory.namedNode(`${ns}${term}`)
+    globalFactory.namedNode(`${ns}${term}`);
 
-let proxy: (DataFactory & IdentityFactory<any> & any)
+let proxy: DataFactory & IdentityFactory<any> & any;
 if (typeof Proxy !== "undefined") {
   proxy = new Proxy<DataFactory>(globalFactory || ({} as DataFactory & any), {
     ownKeys(): (string|number|symbol)[] {
-      return globalFactory && Object.keys(globalFactory) || []
+      return globalFactory && Object.keys(globalFactory) || [];
     },
 
     getOwnPropertyDescriptor(_, k: string | number | symbol): PropertyDescriptor | undefined {
-      return Object.getOwnPropertyDescriptor(globalFactory, k as string)
+      return Object.getOwnPropertyDescriptor(globalFactory, k as string);
     },
 
     set(_, property: keyof DataFactory & any, value): boolean {
-      globalFactory[property] = value
-      return true
+      globalFactory[property] = value;
+      return true;
     },
 
     get(_, property: keyof DataFactory & any) {
-      return globalFactory[property]
+      return globalFactory[property];
     },
   })
 } else {
@@ -86,9 +87,9 @@ if (typeof Proxy !== "undefined") {
     'quadrupleToNQ',
     'quadToNQ',
   ].reduce((acc, key) => {
-    acc[key] = (...args: any[]) => globalFactory[key](...args)
+    acc[key] = (...args: any[]) => globalFactory[key](...args);
     return acc;
-  }, {} as { [k: string]: Function })
+  }, {} as { [k: string]: Function });
 }
 
 export {
@@ -96,9 +97,9 @@ export {
   globalFactory,
   globalSymbol,
   PlainFactory,
-}
+};
 
-export * from './types'
-export * from './utilities'
+export * from './types';
+export * from './utilities';
 
-export default proxy
+export default proxy;

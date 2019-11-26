@@ -1,0 +1,56 @@
+{
+  "name": "@ontologies/core",
+  "version": "1.5.0",
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-ts-standard-pkg",
+        {
+          "exclude": [
+            "__tests__/**/*"
+          ]
+        }
+      ],
+      [
+        "@pika/plugin-build-node"
+      ],
+      [
+        "@pika/plugin-build-web"
+      ]
+    ]
+  },
+  "description": "Like definitely typed, but for ontologies",
+  "main": "dist/cjs/index.js",
+  "module": "dist/module/index.js",
+  "sideEffects": true,
+  "types": "dist/module/index.d.ts",
+  "scripts": {
+    "build": "pika build",
+    "test": "exit 0",
+    "version": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ontola/ontologies.git"
+  },
+  "author": "Fletcher91 <thom@ontola.io>",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/ontola/ontologies/issues"
+  },
+  "homepage": "https://github.com/ontola/ontologies#readme",
+  "dependencies": {
+    "@ungap/global-this": "^0.3.1"
+  },
+  "peerDependencies": {
+    "@ontologies/core": ">=1.5.0"
+  },
+  "devDependencies": {
+    "@pika/pack": "^0.5.0",
+    "@pika/plugin-build-node": "^0.8.1",
+    "@pika/plugin-build-web": "^0.8.1",
+    "@pika/plugin-ts-standard-pkg": "^0.8.1",
+    "eslint": "^6.7.1",
+    "typescript": "^3.7.2"
+  }
+}
