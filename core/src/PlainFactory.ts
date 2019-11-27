@@ -252,8 +252,27 @@ export class PlainFactory implements DataFactory {
     return equals(a, b)
   }
 
+  public fromId(id: Indexable): SomeTerm {
+    return this.termFromNQ(id as string);
+  }
+
   public id(obj: SomeTerm | Quad | Quadruple): Indexable {
     return this.toNQ(obj)
+  }
+
+  public termFromNQ(nq: string): SomeTerm {
+    if (nq.startsWith("<")) {
+      return this.namedNode(nq.slice("<".length, -1))
+    } else if (nq.startsWith("_")) {
+      return this.blankNode(nq.slice("_:".length, -1))
+    } else if (nq.startsWith('"')) {
+      const [ valueOrLang, datatype ] = nq.split("^^")
+      const [ value, lang ] = valueOrLang.split("@")
+
+      return this.literal(value, lang || this.namedNode(datatype))
+    } else {
+      throw new Error("Unknown term given")
+    }
   }
 
   public toNQ(term: SomeTerm | Quadruple | Quad): string {

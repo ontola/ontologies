@@ -3,7 +3,6 @@ import "@ungap/global-this";
 import { DefaultFactory, PlainFactory } from "./PlainFactory";
 import {
   DataFactory,
-  IdentityFactory,
   NamedNode,
   Namespace,
 } from "./types";
@@ -46,7 +45,7 @@ export const createNS = (ns: string): Namespace =>
   (term: string): NamedNode =>
     globalFactory.namedNode(`${ns}${term}`);
 
-let proxy: DataFactory & IdentityFactory<any> & any;
+let proxy: DataFactory<any> & any;
 if (typeof Proxy !== "undefined") {
   proxy = new Proxy<DataFactory>(globalFactory || ({} as DataFactory & any), {
     ownKeys(): (string|number|symbol)[] {
@@ -84,6 +83,7 @@ if (typeof Proxy !== "undefined") {
     'toNQ',
     'fromId',
     'termToNQ',
+    'termFromNQ',
     'quadrupleToNQ',
     'quadToNQ',
   ].reduce((acc, key) => {

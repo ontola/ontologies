@@ -748,16 +748,6 @@
     rollup "^1.1.0"
     rollup-plugin-babel "^4.3.0"
 
-"@pika/plugin-build-types@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@pika/plugin-build-types/-/plugin-build-types-0.8.1.tgz#bb9c709a374e8060c22b9853c382d4de3e371124"
-  integrity sha512-0QMRJh85TeinSgnpOkVBIy2RqhYx6CfKXELHEVl9glB1YMJnjlendzSSHUEBo4bXYkx0z2JGkv9IAtQyfwEdTQ==
-  dependencies:
-    "@pika/types" "^0.8.1"
-    execa "^2.0.0"
-    mkdirp "^0.5.1"
-    typescript "~3.4.0"
-
 "@pika/plugin-build-web@^0.8.1":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@pika/plugin-build-web/-/plugin-build-web-0.8.1.tgz#ba519fcd29eed20c1d1091d4083d0be21aa6a5f3"
@@ -3465,11 +3455,6 @@ typescript@^3.7.2:
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
   integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
-
-typescript@~3.4.0:
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.5.tgz#2d2618d10bb566572b8d7aad5180d84257d70a99"
-  integrity sha512-YycBxUb49UUhdNMU5aJ7z5Ej2XGmaIBL0x34vZ82fn3hGvD+bgrMrVDpatgz2f7YxUMJxMkbWxJZeAvDxVe7Vw==
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"
