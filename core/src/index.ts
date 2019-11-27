@@ -8,7 +8,7 @@ import {
 } from "./types";
 
 let setup: (factory?: DataFactory, override?: boolean) => void;
-let globalFactory: DataFactory & any = DefaultFactory;
+let globalFactory: DataFactory & any;
 let globalSymbol: any;
 
 function shouldOverride(rdfFactory: any, override: boolean) {
@@ -46,6 +46,7 @@ if (typeof Symbol !== "undefined") {
   globalSymbol = rdfFactory;
   globalFactory = (globalThis as any)[rdfFactory];
 }
+setup(DefaultFactory);
 
 export const createNS = (ns: string): Namespace =>
   (term: string): NamedNode =>
