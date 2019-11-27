@@ -5,7 +5,7 @@ export const enum TermType {
 }
 export type TermTypes = "NamedNode" | "BlankNode" | "Literal"
 
-export type Indexable = number | string | unknown
+export type Indexable = number | string
 
 export interface RDFObject {
   id?: Indexable
