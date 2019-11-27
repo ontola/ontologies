@@ -252,7 +252,7 @@ export class PlainFactory implements DataFactory {
     return equals(a, b)
   }
 
-  public fromId(id: Indexable): SomeTerm {
+  public fromId(id: Indexable): SomeTerm | unknown {
     return this.termFromNQ(id as string);
   }
 
