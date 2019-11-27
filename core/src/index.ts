@@ -8,14 +8,20 @@ import {
 } from "./types";
 
 let setup: (factory?: DataFactory, override?: boolean) => void;
-let globalFactory: DataFactory & any;
+let globalFactory: DataFactory & any = DefaultFactory;
 let globalSymbol: any;
+
+function shouldOverride(rdfFactory: any, override: boolean) {
+  const factory = (globalThis as any)[rdfFactory];
+
+  return typeof factory === "undefined" || factory === DefaultFactory || override
+}
 
 if (typeof Symbol !== "undefined") {
   const rdfFactory: unique symbol = Symbol.for('rdfFactory');
 
   setup = function setup(factory = DefaultFactory, override = true) {
-    if (typeof (globalThis as any)[rdfFactory] === "undefined" || override) {
+    if (shouldOverride(rdfFactory, override)) {
       (globalThis as any)[rdfFactory] = factory;
       globalFactory = factory;
     } else if (typeof globalFactory === "undefined" || override) {
@@ -29,7 +35,7 @@ if (typeof Symbol !== "undefined") {
   const rdfFactory = 'rdfFactory';
 
   setup = function setup(factory = DefaultFactory, override = true) {
-    if (typeof (globalThis as any)[rdfFactory] === "undefined" || override) {
+    if (shouldOverride(rdfFactory, override)) {
       (globalThis as any)[rdfFactory] = factory;
       globalFactory = factory;
     } else if (typeof globalFactory === "undefined" || override) {
