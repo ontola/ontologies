@@ -151,7 +151,7 @@ export class PlainFactory implements DataFactory {
   }
 
   public defaultGraph(): NamedNode {
-    return this.namedNode("")
+    return this.namedNode("rdf:defaultGraph")
   }
 
   /**
