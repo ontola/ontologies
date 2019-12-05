@@ -126,7 +126,7 @@ export interface DataFactoryOpts {
 export interface LowLevelStore {
   rdfFactory: DataFactory
 
-  add(subject: Node, predicate: NamedNode, object: Term, graph?: Node): void
+  add(subject: Node, predicate: NamedNode, object: Term, graph?: Node): Quad
 
   addQuad(quad: Quad): Quad
   addQuads(quad: Quad[]): Quad[]
