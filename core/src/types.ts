@@ -103,13 +103,12 @@ export const enum Feature {
   defaultGraphType = "DEFAULT_GRAPH_TYPE",
   /** Whether the factory supports equals on produced instances */
   equalsMethod = "EQUALS_METHOD",
-  /**
-   * Whether the factory is an {IdentityFactory}, so it allows reverse lookups to be done with
-   * {fromId}.
-   */
+  /** Whether the factory can create a unique idempotent identifier for the given term. */
+  id = "ID",
+  /** Whether the factory will return the same instance for subsequent calls (implies `===`). */
   identity = "IDENTITY",
-  /** Whether the factory supports mapping ids back to instances */
-  nodeLookup = "NODE_LOOKUP",
+  /** Whether the factory supports mapping ids back to instances (should adhere to the identity setting) */
+  reversibleId = "REVERSIBLE_ID",
   /** Whether the factory supports termType:Variable terms */
   variableType = "VARIABLE_TYPE",
 }
