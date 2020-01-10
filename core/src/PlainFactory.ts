@@ -332,7 +332,7 @@ export class PlainFactory implements DataFactory {
       case TermType.Literal:
         if (term.datatype) {
           if (term.datatype.value === datatypes.string) {
-            return `"${term.value}"`
+            return `"${term.value.replace("\n", "\\n")}"`
           }
 
           return `"${term.value}"^^${this.termToNQ(term.datatype)}`
