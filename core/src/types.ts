@@ -71,6 +71,7 @@ export interface Literal extends Term {
 }
 
 export interface Quad {
+  id?: Indexable
   subject: Node
   predicate: NamedNode
   object: SomeTerm
