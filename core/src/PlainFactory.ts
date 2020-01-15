@@ -330,19 +330,20 @@ export class PlainFactory implements DataFactory {
       case TermType.NamedNode:
         return `<${term.value}>`
       case TermType.Literal:
+        const escaped = `"${term.value.replace(/\n/g, "\\n")}"`
         if (term.datatype) {
           if (term.datatype.value === datatypes.string) {
-            return `"${term.value.replace("\n", "\\n")}"`
+            return escaped
           }
 
-          return `"${term.value}"^^${this.termToNQ(term.datatype)}`
+          return `${escaped}^^${this.termToNQ(term.datatype)}`
         }
 
         if (term.language) {
-          return `"${term.value}"@${term.language}`
+          return `${escaped}@${term.language}`
         }
 
-        return `"${term.value}"`
+        return escaped
 
       default:
         throw new Error(`Nonstandard termtype '${(term as any).termType}' given`)
