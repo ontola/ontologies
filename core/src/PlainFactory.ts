@@ -271,7 +271,10 @@ export class PlainFactory implements DataFactory {
       const [ valueOrLang, datatype ] = nq.split("^^")
       const [ value, lang ] = valueOrLang.split("@")
 
-      return this.literal(value, lang || this.namedNode(datatype))
+      return this.literal(
+        value.slice(1, -1),
+        lang || datatype ? this.namedNode(datatype) : undefined
+      )
     } else {
       throw new Error("Unknown term given")
     }
