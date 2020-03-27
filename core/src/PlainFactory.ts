@@ -100,6 +100,7 @@ export class PlainFactory implements DataFactory {
       [Feature.defaultGraphType]: false,
       [Feature.equalsMethod]: false,
       [Feature.id]: true,
+      [Feature.idStamp]: false,
       [Feature.identity]: false,
       [Feature.reversibleId]: true,
       [Feature.variableType]: false,

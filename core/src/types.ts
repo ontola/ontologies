@@ -106,7 +106,9 @@ export const enum Feature {
   equalsMethod = "EQUALS_METHOD",
   /** Whether the factory can create a unique idempotent identifier for the given term. */
   id = "ID",
-  /** Whether the factory will return the same instance for subsequent calls (implies `===`). */
+  /** Whether the factory stores its unique idempotent identifier for the given term on the instance with the `id` property (implies Feature.id). */
+  idStamp = "ID_STAMP",
+  /** Whether the factory will return the same instance for subsequent calls (implies implies Feature.id and `===`). */
   identity = "IDENTITY",
   /** Whether the factory supports mapping ids back to instances (should adhere to the identity setting) */
   reversibleId = "REVERSIBLE_ID",
