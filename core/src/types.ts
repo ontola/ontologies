@@ -1,4 +1,4 @@
-export const enum TermType {
+export enum TermType {
   NamedNode = "NamedNode",
   BlankNode = "BlankNode",
   Literal = "Literal",
@@ -90,14 +90,14 @@ export type SomeTerm = NamedNode | BlankNode | Literal
  */
 export type Quadruple = [ Node, NamedNode, SomeTerm, Node ]
 
-export const enum QuadPosition {
+export enum QuadPosition {
   subject = 0,
   predicate = 1,
   object = 2,
   graph = 3,
 }
 
-export const enum Feature {
+export enum Feature {
   /** Whether the factory supports termType:Collection terms */
   collections = "COLLECTIONS",
   /** Whether the factory supports termType:DefaultGraph terms */
