@@ -55,6 +55,6 @@
     "@pika/plugin-bundle-web": "^0.8.1",
     "@pika/plugin-ts-standard-pkg": "^0.8.1",
     "eslint": "^6.7.1",
-    "typescript": "^3.7.2"
+    "typescript": "^3.8.3"
   }
 }
