@@ -224,3 +224,8 @@ export interface DataFactory<FactoryTypes = NamedNode | BlankNode | Literal | Qu
 
 export type Namespace = (term:string) => NamedNode
 export type NamespaceCreator = (ns: string) => Namespace
+
+export interface CustomPredicateCreator {
+  /** Creates a custom predicate with this namespace as its base. */
+  ns: Namespace;
+}
