@@ -17,30 +17,30 @@ function shouldOverride(rdfFactory: any, override: boolean) {
   return typeof factory === "undefined" || factory === DefaultFactory || override
 }
 
+function changeFactory(rdfFactory: any, factory: DataFactory, override: boolean) {
+  if (shouldOverride(rdfFactory, override)) {
+    (globalThis as any)[rdfFactory] = factory;
+    globalFactory = factory;
+  } else if (typeof globalFactory === "undefined" || override) {
+    (globalThis as any)[rdfFactory] = factory;
+    globalFactory = factory;
+  }
+}
+
 if (typeof Symbol !== "undefined") {
   const rdfFactory: unique symbol = Symbol.for('rdfFactory');
 
   setup = function setup(factory = DefaultFactory, override = true) {
-    if (shouldOverride(rdfFactory, override)) {
-      (globalThis as any)[rdfFactory] = factory;
-      globalFactory = factory;
-    } else if (typeof globalFactory === "undefined" || override) {
-      globalFactory = factory;
-    }
-  };
+    changeFactory(rdfFactory, factory, override);
 
   globalFactory = (globalThis as any)[rdfFactory];
+  };
   globalSymbol = rdfFactory;
 } else {
   const rdfFactory = 'rdfFactory';
 
   setup = function setup(factory = DefaultFactory, override = true) {
-    if (shouldOverride(rdfFactory, override)) {
-      (globalThis as any)[rdfFactory] = factory;
-      globalFactory = factory;
-    } else if (typeof globalFactory === "undefined" || override) {
-      globalFactory = factory;
-    }
+    changeFactory(rdfFactory, factory, override);
   };
 
   globalSymbol = rdfFactory;
@@ -93,6 +93,7 @@ if (typeof Proxy !== "undefined") {
     'termFromNQ',
     'quadrupleToNQ',
     'quadToNQ',
+    'supports',
   ].reduce((acc, key) => {
     acc[key] = (...args: any[]) => globalFactory[key](...args);
     return acc;
