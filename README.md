@@ -126,10 +126,10 @@ import { name } from '@ontologies/schema'
 console.log(name) // http://schema.org/name
 ```
 
-With default export
+All terms
 
 ```javascript
-import schema from '@ontologies/schema'
+import * as schema from '@ontologies/schema'
 
 console.log(schema.name) // http://schema.org/name
 ```
@@ -193,16 +193,7 @@ console.log(dcterms['ISO639-2']) // NamedNode(http://purl.org/dc/terms/ISO639-2)
 ```
 
 ### Collisions with ES reserved keywords
-No reserved object property keys exist for JavaScript object literals, so when using the default
-export, terms can be accessed directly:
-
-```javascript
-import schema from '@ontologies/schema'
-
-console.log(schema.yield) // NamedNode(http://schema.org/name)
-```
-
-When using the named exports, if a term collides with an [ES 5/6 reserved keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords)
+If a term collides with an [ES 5/6 reserved keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords)
 or certain built-in classes, the term is prepended with the symbol of the ontology:
 
 ```javascript

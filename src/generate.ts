@@ -4,11 +4,8 @@ import {
   Project,
   StatementStructures,
   StructureKind,
-  SyntaxKind,
-  ts,
   VariableDeclarationKind,
 } from 'ts-morph'
-import { ScriptTarget } from "typescript/lib/tsserverlibrary"
 
 import defaults from "../templates/defaults.package.json"
 import { packageTSIndexFile } from "./helpers"
@@ -104,8 +101,6 @@ const RESERVED_KEYWORDS = [
   'valueOf',
 ];
 
-const UNSAFE_TOKENS = ['-']
-
 const firstValue = (obj: OntologyItem, property: string): OntologyItemPropType => {
   if (typeof obj === "object" && obj !== null && property in obj) {
     const prop = obj[property]
@@ -191,7 +186,7 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
         {
           kind: StructureKind.VariableDeclaration,
           name: safeTermSymbol(term.term),
-          initializer: `ns("${term.term}")`,
+          initializer: `/*#__PURE__*/ ns("${term.term}")`,
         }
       ],
       leadingTrivia: (term.comment && term.comment[0])
@@ -203,82 +198,6 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
     const classes = ontology.classes.map(structureForTerm)
     const properties = ontology.properties.map(structureForTerm)
     const otherTerms = ontology.otherTerms.map(structureForTerm)
-
-    const shorthandNSDefaultExport = ts.createShorthandPropertyAssignment('ns')
-    ts.addSyntheticLeadingComment(
-      shorthandNSDefaultExport,
-      SyntaxKind.MultiLineCommentTrivia,
-      `* ${nsCommentText} `,
-      true
-    )
-
-    const shorthandTermsDefaultExport = [
-      ...ontology.classes,
-      ...ontology.properties,
-      ...ontology.otherTerms,
-    ].flatMap<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>((property) => {
-        const safeTerm = safeTermSymbol(property.term)
-        const comment = (property.comment && property.comment[0])
-          ? `* ${property.comment[0].value} `
-          : undefined
-
-        if (safeTerm !== property.term) {
-          const nonValidIdentifier = UNSAFE_TOKENS.some((token) => property.term.includes(token))
-
-          const exactPropertyName = nonValidIdentifier
-            ? ts.createComputedPropertyName(ts.createLiteral(property.term))
-            : property.term
-          const exactPropertyNameNode = ts.createPropertyAssignment(exactPropertyName, ts.createIdentifier(safeTerm))
-          if (comment) {
-            ts.addSyntheticLeadingComment(
-              exactPropertyNameNode,
-              SyntaxKind.MultiLineCommentTrivia,
-              comment,
-              true
-            )
-          }
-
-          const validIdentifierPropertyName = nonValidIdentifier
-            ? ts.createPropertyAssignment(safeTerm, ts.createIdentifier(safeTerm))
-            : undefined
-          if (validIdentifierPropertyName && comment) {
-            ts.addSyntheticLeadingComment(
-              validIdentifierPropertyName,
-              SyntaxKind.MultiLineCommentTrivia,
-              comment,
-              true
-            )
-          }
-
-          return [
-            validIdentifierPropertyName,
-            exactPropertyNameNode,
-          ].filter(Boolean) as Array<ts.PropertyAssignment | ts.ShorthandPropertyAssignment>
-        }
-
-        const test = ts.createShorthandPropertyAssignment(safeTerm);
-        if (comment) {
-          ts.addSyntheticLeadingComment(test, SyntaxKind.MultiLineCommentTrivia, comment, true)
-        }
-        return test
-      })
-
-    const defaultExportSymbols: Array<ts.ShorthandPropertyAssignment | ts.PropertyAssignment> = [
-      shorthandNSDefaultExport,
-      ...shorthandTermsDefaultExport,
-    ]
-
-    const defaultExport = ts.createExportDefault(ts.createObjectLiteral(defaultExportSymbols, true))
-
-    const printer = ts.createPrinter({
-      omitTrailingSemicolon: false,
-    })
-
-    const defaultExportPrintedNode = printer.printNode(
-      ts.EmitHint.Unspecified,
-      defaultExport,
-      ts.createSourceFile("", "", ScriptTarget.ES2019)
-    )
 
     packages.createSourceFile(
       packageTSIndexFile(ontology),
@@ -293,8 +212,6 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
           ...properties,
           "\n\n/* Other terms */\n",
           ...otherTerms,
-          "\n\n",
-          defaultExportPrintedNode
         ]
       }
     )
