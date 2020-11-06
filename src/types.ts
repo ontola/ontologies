@@ -1,4 +1,4 @@
-import { NamedNode, SomeTerm } from "../core"
+import { NamedNode, SomeTerm } from "@ontologies/core"
 
 export interface OntologyInfo {
   /** Human readable name */
