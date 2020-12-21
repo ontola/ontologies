@@ -9,9 +9,7 @@
   "scripts": {
     "clean": "rm -rf packages/* && rm -rf dist/*",
     "build": "yarn build:core && yarn generate",
-    "build:core": "yarn build:module && yarn build:cjs",
-    "build:cjs": "tsc --outDir ./dist/cjs -m commonjs core/index.ts",
-    "build:module": "tsc --outDir ./dist/module -d -m es6 core/index.ts",
+    "build:core": "cd core && (yarn build || true) && cd ..",
     "generate": "ts-node src/index.ts",
     "rebuild": "yarn clean && yarn build",
     "test": "eslint --no-eslintrc -c ./eslint.json ./packages/**/*.js"

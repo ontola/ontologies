@@ -12,7 +12,7 @@ import rdfFactory, {
   SomeTerm,
   isNamedNode,
   isLiteral,
-} from "../core";
+} from "@ontologies/core";
 import {
   Ontology,
   OntologyClass,
