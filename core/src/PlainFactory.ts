@@ -273,7 +273,7 @@ export class PlainFactory implements DataFactory {
 
       return this.literal(
         value.slice(1, -1),
-        lang || datatype ? this.namedNode(datatype) : undefined
+        lang || (datatype ? this.namedNode(datatype) : undefined)
       )
     } else {
       throw new Error("Unknown term given")
