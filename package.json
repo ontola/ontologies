@@ -18,7 +18,7 @@
     "type": "git",
     "url": "git+https://github.com/ontola/ontologies.git"
   },
-  "author": "Fletcher91 <thom@ontola.io>",
+  "author": "Rescribet <thom@ontola.io>",
   "license": "GPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/ontola/ontologies/issues"
