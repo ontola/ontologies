@@ -4,10 +4,11 @@ import ts, { ModuleKind } from "typescript"
 import tsconfig from "../tsconfig.json"
 
 import { packageFolder, packageTSIndexFile } from './helpers'
-import { Ontology } from "./types"
+import { Package } from './types';
 
-export const compile = (ontologies: Ontology[]): Ontology[] => {
+export const compile = (ontologies: Package[]): Package[] => {
   for (const ontology of ontologies) {
+    console.log(`Compiling ${ontology.info.name}`);
     const program = ts.createProgram(
       [packageTSIndexFile(ontology)],
       {

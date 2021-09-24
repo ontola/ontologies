@@ -4,10 +4,10 @@ import semver from "semver"
 
 import "./packages"
 import { packageFolder, packagePackageJSON } from "./helpers"
-import { Ontology } from "./types"
+import { Package } from './types';
 
-export const publish = (ontologies: Ontology[]): Promise<Ontology[]> => {
-  const folders = ontologies.map((ontology) => new Promise<Ontology>(async (resolve, reject) => {
+export const publish = (ontologies: Package[]): Promise<Package[]> => {
+  const folders = ontologies.map((ontology) => new Promise<Package>(async (resolve, reject) => {
     const localPackage = require(`../${packagePackageJSON(ontology)}`)
     const localVersion = localPackage.version
     const publishedPackage = await npmFetch.json(localPackage.name).catch((e) => {

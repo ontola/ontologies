@@ -1,8 +1,10 @@
-import * as  fs from "fs"
-import glob from "glob"
-import { RDFStore, Schema, rdflib } from "link-lib"
-import * as N3 from "n3"
-import * as path from "path"
+import { doc } from '@rdfdev/iri';
+import * as  fs from "fs";
+import glob from "glob";
+import { RDFStore, Schema, SomeNode } from 'link-lib';
+import * as N3 from "n3";
+import * as path from "path";
+import { IndexedFormula, parse as rdfLibParse } from "rdflib";
 
 import rdfFactory, {
   createNS,
@@ -14,16 +16,17 @@ import rdfFactory, {
   isLiteral,
 } from "@ontologies/core";
 import {
-  Ontology,
+  Dictionary,
   OntologyClass,
-  OntologyInfo,
+  OntologyInfo, OntologyItem,
   OntologyProperty,
-  OntologyTerm,
-} from "./types"
+  OntologyTerm, Package,
+} from './types';
 
 const rdf = createNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 const rdfs = createNS("http://www.w3.org/2000/01/rdf-schema#")
 const owl = createNS("http://www.w3.org/2002/07/owl#")
+const dce = createNS("http://purl.org/dc/elements/1.1/")
 const classTypes: Node[] = [
   rdfs("Class"),
   rdfs("Datatype"),
@@ -36,7 +39,8 @@ const propertyTypes: Node[] = [
   owl("DatatypeProperty"),
 ]
 
-const isInNamespaceButNotIdentity = (node: Node, ns: string): boolean => node.value.startsWith(ns) && node.value !== ns
+const isInNamespaceButNotIdentity = (node: Node, ns: string): boolean =>
+  node.value.startsWith(ns) && node.value !== ns
 
 const filterUnique = <U>(value: U, index: number, self: U[]) => {
   const selfIndex = self.findIndex((s: U) =>
@@ -45,59 +49,71 @@ const filterUnique = <U>(value: U, index: number, self: U[]) => {
   return selfIndex === index
 }
 
-function parseOntology(packageFile: string, ontologyInfo: OntologyInfo): Promise<Quad[]> {
-  return new Promise((resolve) => {
-    const file = ontologyInfo.ontologyFile || "ontology.ttl"
-    const fileType = ontologyInfo.ontologyType || "text/turtle"
-    const ontologyFile = fs.readFileSync(path.resolve(packageFile, `../${file}`), "utf8")
+const parseWithRdflib = (ontologyFile: string, info: OntologyInfo): Promise<Quad[]> => {
+  const ontology = new IndexedFormula();
+  ontology.rdfFactory = rdfFactory;
+  const fileType = info.ontologyType;
 
-    if (fileType === "text/turtle") {
-      const statements = new N3.Parser()
-        .parse(ontologyFile)
-        .map((quad) => {
-          const subject = isNamedNode(quad.subject)
-            ? rdfFactory.namedNode(quad.subject.value)
-            : rdfFactory.blankNode(quad.subject.value)
-          const predicate = rdfFactory.namedNode(quad.predicate.value)
-          const obj = isLiteral(quad.object)
-            ? rdfFactory.literal(
-              quad.object.value,
-              quad.object.language,
-              quad.object.datatype
-                ? rdfFactory.namedNode(quad.object.datatype.value)
-                : undefined
-            )
-            : isNamedNode(quad.object)
-              ? rdfFactory.namedNode(quad.object.value)
-              : rdfFactory.blankNode(quad.object.value)
-
-          return rdfFactory.quad(subject, predicate, obj)
-        })
-      resolve(statements)
-    } else {
-      const ontology = new rdflib.IndexedFormula()
-      rdflib.RDFparse(ontologyFile, ontology, ontologyInfo.ns, fileType, () => {
-        resolve(ontology.statements)
-      })
-    }
-  })
+  return new Promise<Quad[]>((resolve) => {
+    rdfLibParse(ontologyFile, ontology, info.ns, fileType, () => {
+      resolve(ontology.statements.map((s) => rdfFactory.quad(s.subject, s.predicate, s.object)));
+    })
+  });
 }
 
-function uniqueResourcesOfType(ontologyData: Quad[],
-                               ontologyInfo: OntologyInfo,
-                               types: Node[]): Node[] {
-  const schema = new Schema(new RDFStore())
-  schema.addStatements(ontologyData)
+const parseWithN3 = (ontologyFile: string): Quad[] => {
+  return new N3.Parser()
+    .parse(ontologyFile)
+    .map((quad) => {
+      const subject = isNamedNode(quad.subject)
+        ? rdfFactory.namedNode(quad.subject.value)
+        : rdfFactory.blankNode(quad.subject.value)
+      const predicate = rdfFactory.namedNode(quad.predicate.value)
+      const obj = isLiteral(quad.object)
+        ? rdfFactory.literal(
+          quad.object.value,
+          quad.object.language,
+          quad.object.datatype
+            ? rdfFactory.namedNode(quad.object.datatype.value)
+            : undefined
+        )
+        : isNamedNode(quad.object)
+          ? rdfFactory.namedNode(quad.object.value)
+          : rdfFactory.blankNode(quad.object.value)
+
+      return rdfFactory.quad(subject, predicate, obj)
+    })
+};
+
+const parseOntology = async (info: OntologyInfo): Promise<Quad[]> => {
+  const file = info.ontologyFile ?? "ontology.ttl";
+  const fileType = info.ontologyType ?? "text/turtle";
+  const ontologyFile = fs.readFileSync(path.resolve(info.path, `../${file}`), "utf8");
+
+  if (fileType === "text/turtle") {
+    return parseWithN3(ontologyFile);
+  } else {
+    return parseWithRdflib(ontologyFile, info);
+  }
+};
+
+function uniqueResourcesOfType(
+  ontologyData: Quad[],
+  ontologyInfo: OntologyInfo,
+  types: Node[],
+): Node[] {
+  const schema = new Schema(new RDFStore());
+  schema.addQuads(ontologyData);
 
   return ontologyData
     .filter((st) => {
       if (isInNamespaceButNotIdentity(st.subject, ontologyInfo.ns) && rdfFactory.equals(st.predicate, rdf("type"))) {
-        return types.some((type) => schema.isInstanceOf(rdfFactory.id(st.subject), rdfFactory.id(type)))
+        return types.some((type) => schema.isInstanceOf(rdfFactory.id(st.subject), rdfFactory.id(type)));
       }
-      return false
+      return false;
     })
     .map((s) => s.subject)
-    .filter(filterUnique)
+    .filter(filterUnique);
 }
 
 const getProperty = (ontologyData: Quad[]) => (subject: Node, prop: NamedNode): SomeTerm[] => {
@@ -106,95 +122,130 @@ const getProperty = (ontologyData: Quad[]) => (subject: Node, prop: NamedNode): 
       .map((s) => s.object);
 }
 
+const getOntologyItem = (
+  subject: Node,
+  getProp: (s: Node, p: NamedNode) => SomeTerm[],
+): OntologyItem=> ({
+  iri: subject,
+  label: getProp(subject, rdfs("label"))
+    .concat(getProp(subject, dce("title"))),
+  comment: getProp(subject, rdfs("comment"))
+    .concat(getProp(subject, dce("description"))),
+  isDefinedBy: getProp(subject, rdfs("isDefinedBy")),
+  seeAlso: getProp(subject, rdfs("seeAlso")),
+})
+
 const getOntologyTerm = (
   subject: Node,
   ontologyInfo: OntologyInfo,
   getProp: (s: Node, p: NamedNode) => SomeTerm[]
 ): OntologyTerm => ({
-  iri: subject,
+  ...getOntologyItem(subject, getProp),
   label: getProp(subject, rdfs("label")),
-  comment: getProp(subject, rdfs("comment")),
-  isDefinedBy: getProp(subject, rdfs("isDefinedBy")),
-  seeAlso: getProp(subject, rdfs("seeAlso")),
   term: subject.value.substring(ontologyInfo.ns.length),
 });
 
-function getClasses(ontologyData: Quad[],  ontologyInfo: OntologyInfo): OntologyClass[] {
-  const getProp = getProperty(ontologyData);
+function getClasses(data: Quad[],  info: OntologyInfo): OntologyClass[] {
+  const getProp = getProperty(data);
 
-  return uniqueResourcesOfType(ontologyData, ontologyInfo, classTypes)
+  return uniqueResourcesOfType(data, info, classTypes)
     .map((subject: Node) => ({
-      ...getOntologyTerm(subject, ontologyInfo, getProp),
+      ...getOntologyTerm(subject, info, getProp),
       subClassOf: getProp(subject, rdfs("subClassOf")).filter(term => isNamedNode(term)) as NamedNode[],
-    }))
+    }));
 }
 
-function getOtherTerms(ontologyData: Quad[], ontologyInfo: OntologyInfo): OntologyTerm[] {
-  const getProp = getProperty(ontologyData)
+function getOtherTerms(data: Quad[], info: OntologyInfo): OntologyTerm[] {
+  const getProp = getProperty(data)
   const schema = new Schema(new RDFStore())
-  schema.addStatements(ontologyData)
+  schema.addQuads(data)
 
-  return ontologyData
+  return data
     .filter((st) => {
-      if (isInNamespaceButNotIdentity(st.subject, ontologyInfo.ns)
+      if (isInNamespaceButNotIdentity(st.subject, info.ns)
         && rdfFactory.equals(st.predicate, rdf("type"))
         && !isLiteral(st.object)) {
         return ![
           ...propertyTypes,
           ...classTypes
-        ].some((type) => schema.isInstanceOf(rdfFactory.id(st.subject), rdfFactory.id(type)))
+        ].some((type) => schema.isInstanceOf(rdfFactory.id(st.subject), rdfFactory.id(type)));
       }
 
       return false
     })
     .map((s) => s.subject)
     .filter(filterUnique)
-    .map<OntologyTerm>((subject: Node) => getOntologyTerm(subject, ontologyInfo, getProp))
+    .map<OntologyTerm>((subject: Node) => getOntologyTerm(subject, info, getProp));
 }
 
-function getProperties(ontologyData: Quad[], ontologyInfo: OntologyInfo): OntologyProperty[] {
-  const getProp = getProperty(ontologyData);
+function getProperties(data: Quad[], info: OntologyInfo): OntologyProperty[] {
+  const getProp = getProperty(data);
 
-  return uniqueResourcesOfType(ontologyData, ontologyInfo, propertyTypes)
+  return uniqueResourcesOfType(data, info, propertyTypes)
     .map((subject: Node) => ({
-      ...getOntologyTerm(subject, ontologyInfo, getProp),
+      ...getOntologyTerm(subject, info, getProp),
       domain: getProp(subject, rdfs("domain")).filter(term => isNamedNode(term)) as NamedNode[],
       range: getProp(subject, rdfs("range")).filter(term => isNamedNode(term)) as NamedNode[],
     }))
 }
 
-export function parse(): Promise<Ontology[]> {
+function getSelf(data: Quad[], info: OntologyInfo): OntologyItem {
+  const iri = [
+    rdfFactory.namedNode(info.ns),
+    doc(rdfFactory.namedNode(info.ns))
+  ];
+  const matchesSubject = (subject: SomeNode) => iri.some((it) => rdfFactory.equals(subject, it));
+  const selfData = data.filter(({ subject }) => matchesSubject(subject));
+
+  return getOntologyItem(
+    iri[0],
+    (_: Node, p: NamedNode) => selfData
+      .filter((q) => matchesSubject(q.subject) && rdfFactory.equals(p, q.predicate))
+      .map((q) => q.object),
+  );
+}
+
+function findOntologyDescriptionPaths(): Promise<string[]> {
   return new Promise(async (resolve, reject) => {
     glob("./ontologies/**/index.json", async (err: Error | null, files: string[]) => {
       if (err) {
-        return reject(err)
+        return reject(err);
+      } else {
+        return resolve(files);
       }
+    });
+  });
+}
 
-      const ontologies: Ontology[] = []
+const getDictionary = async (info: OntologyInfo): Promise<Dictionary> => {
+  const parsed = await(parseOntology(info));
 
-      for (const file of files) {
-        const infoFile = fs.readFileSync(file, "utf8")
-        const ontologyInfo = JSON.parse(infoFile) as OntologyInfo;
+  return {
+    classes: getClasses(parsed, info),
+    otherTerms: getOtherTerms(parsed, info),
+    properties: getProperties(parsed, info),
+    self: getSelf(parsed, info),
+  };
+}
 
-        const ontologyData = await parseOntology(file, ontologyInfo)
+const collectOntologyInfos = async (): Promise<OntologyInfo[]> => (await findOntologyDescriptionPaths())
+  .map((path) => [path, fs.readFileSync(path, "utf8")])
+  .map(([path, file]) => ({
+    ...JSON.parse(file),
+    path,
+  }) as OntologyInfo);
 
-        const ontology = {
-          name: ontologyInfo.name,
-          ns: rdfFactory.namedNode(ontologyInfo.ns),
-          source: ontologyInfo.source,
-          lov: ontologyInfo.lov,
-          spec: ontologyInfo.spec,
-          symbol: ontologyInfo.symbol,
-          classes: getClasses(ontologyData, ontologyInfo),
-          otherTerms: getOtherTerms(ontologyData, ontologyInfo),
-          properties: getProperties(ontologyData, ontologyInfo),
-          version: ontologyInfo.version,
-        };
+export async function parse(): Promise<Package[]> {
+  const descriptions = await collectOntologyInfos();
 
-        ontologies.push(ontology)
-      }
+  const packages: Package[] = [];
 
-      return resolve(ontologies)
-    })
-  })
+  for (const info of descriptions) {
+    packages.push({
+      info,
+      dict: await getDictionary(info),
+    });
+  }
+
+  return packages;
 }

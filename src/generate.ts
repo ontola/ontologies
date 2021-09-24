@@ -1,3 +1,4 @@
+import { SomeTerm } from '@ontologies/core';
 import * as fs from "fs"
 import Handlebars from "handlebars"
 import {
@@ -10,11 +11,9 @@ import {
 import defaults from "../templates/defaults.package.json"
 import { packageTSIndexFile } from "./helpers"
 import {
-  Ontology,
-  OntologyItem,
-  OntologyItemPropType,
   OntologyTerm,
-} from './types'
+  Package,
+} from './types';
 
 const RESERVED_KEYWORDS = [
   // Not JS spec, but reserved for custom terms
@@ -101,17 +100,10 @@ const RESERVED_KEYWORDS = [
   'valueOf',
 ];
 
-const firstValue = (obj: OntologyItem, property: string): OntologyItemPropType => {
-  if (typeof obj === "object" && obj !== null && property in obj) {
-    const prop = obj[property]
+const firstValue = (it: SomeTerm[] | undefined): string | undefined =>
+  it?.find(({ value }) => !!value)?.value;
 
-    return Array.isArray(prop) ? prop[0] : prop
-  }
-
-  return undefined
-}
-
-export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
+export async function generate(ontologies: Package[]): Promise<Package[]> {
   const packages = new Project()
 
   const readmeTemplate = Handlebars.compile(fs.readFileSync("./templates/readme.template.md").toString('utf-8'))
@@ -119,7 +111,7 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
   for (const ontology of ontologies) {
     const safeTermSymbol = (term: string) => {
       if (RESERVED_KEYWORDS.includes(term)) {
-        return `${ontology.symbol}${term.replace('-', '_')}`
+        return `${ontology.info.symbol}${term.replace('-', '_')}`
       }
 
       return term.replace('-', '_')
@@ -129,28 +121,28 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       {},
       defaults,
       {
-        name: `@ontologies/${ontology.symbol}`,
-        description: firstValue(ontology, 'label'),
-        version: ontology.version || defaults.version
+        name: `@ontologies/${ontology.info.symbol}`,
+        description: (firstValue(ontology.dict.self.comment) ?? firstValue(ontology.dict.self.label))?.trim(),
+        version: ontology.info.version ?? defaults.version
       }
     )
     packages.createSourceFile(
-      `packages/${ontology.symbol}/package.json`,
+      `packages/${ontology.info.symbol}/package.json`,
       JSON.stringify(packageJSON, null, 2)
     )
 
     packages.createSourceFile(
-      `packages/${ontology.symbol}/README.md`,
+      `packages/${ontology.info.symbol}/README.md`,
       readmeTemplate({
-        ...ontology,
+        ...ontology.info,
         ...packageJSON,
-        humanName: ontology.name,
+        humanName: ontology.info.name,
         ontologiesRepo: 'https://github.com/ontola/ontologies',
-        ns: ontology.ns.value,
-        termCount: ontology.classes.length + ontology.properties.length + ontology.otherTerms.length,
-        classCount: ontology.classes.length,
-        propertyCount: ontology.properties.length,
-        otherTermCount: ontology.otherTerms.length,
+        ns: ontology.info.ns,
+        termCount: ontology.dict.classes.length + ontology.dict.properties.length + ontology.dict.otherTerms.length,
+        classCount: ontology.dict.classes.length,
+        propertyCount: ontology.dict.properties.length,
+        otherTermCount: ontology.dict.otherTerms.length,
       })
     )
 
@@ -164,7 +156,7 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       ]
     };
 
-    const nsCommentText = `Function to create arbitrary terms within the '${ontology.name}' ontology`
+    const nsCommentText = `Function to create arbitrary terms within the '${ontology.info.name}' ontology`
     const ns: StatementStructures = {
       kind: StructureKind.VariableStatement,
       declarationKind: VariableDeclarationKind.Const,
@@ -172,7 +164,7 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
         {
           kind: StructureKind.VariableDeclaration,
           name: "ns",
-          initializer: `createNS("${ontology.ns.value}")`,
+          initializer: `createNS("${ontology.info.ns}")`,
         }
       ],
       isExported: true,
@@ -195,9 +187,9 @@ export async function generate(ontologies: Ontology[]): Promise<Ontology[]> {
       isExported: true
     })
 
-    const classes = ontology.classes.map(structureForTerm)
-    const properties = ontology.properties.map(structureForTerm)
-    const otherTerms = ontology.otherTerms.map(structureForTerm)
+    const classes = ontology.dict.classes.map(structureForTerm)
+    const properties = ontology.dict.properties.map(structureForTerm)
+    const otherTerms = ontology.dict.otherTerms.map(structureForTerm)
 
     packages.createSourceFile(
       packageTSIndexFile(ontology),

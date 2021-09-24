@@ -5,8 +5,14 @@ import { generate } from "./generate"
 import { parse } from "./parse"
 import { publish } from "./publish"
 
-console.log("Starting process")
+const stepWithLog = (func: ((...args: any[]) => any), message: string) => (...args: any[]) => {
+  console.log(message);
+  return func(...args);
+}
+
+console.log("Starting parse")
 parse()
-  .then(generate)
-  .then(compile)
-  .then(publish);
+  .then(stepWithLog(generate, "Starting generate"))
+  .then(stepWithLog(compile, "Starting compile"))
+  .then(stepWithLog(publish, "Starting publish"))
+  .then(() => console.log("Done"));

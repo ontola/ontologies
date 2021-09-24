@@ -27,15 +27,15 @@ please refer to the specification for their canonical definitions.
 
 With default export
 
-```javascript
-import {{symbol}} from '@ontologies/{{symbol}}'
+```typescript
+import * as {{symbol}} from '@ontologies/{{symbol}}'
 
 console.log({{symbol}}.vocTerm) // { termType: 'NamedNode', value: "{{ns}}vocTerm" }
 ```
 
 With named exports
 
-```javascript
+```typescript
 import { vocTerm } from '@ontologies/{{symbol}}'
 
 console.log(vocTerm) // { termType: 'NamedNode', value: "{{ns}}vocTerm" }
@@ -43,8 +43,8 @@ console.log(vocTerm) // { termType: 'NamedNode', value: "{{ns}}vocTerm" }
 
 Use the `ns` function when missing a term or when using custom extensions
 
-```javascript
-import {{symbol}} from '@ontologies/{{symbol}}'
+```typescript
+import * as {{symbol}} from '@ontologies/{{symbol}}'
 
 console.log({{symbol}}.ns('myTerm')) // { termType: 'NamedNode', value: "{{ns}}myTerm" }
 ```

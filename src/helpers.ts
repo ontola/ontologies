@@ -1,17 +1,17 @@
-import { Ontology } from "./types"
+import { Package } from './types';
 
-export function packageFolder (ontology: Ontology) {
-  return `packages/${ontology.symbol}`
+export function packageFolder (ontology: Package) {
+  return `packages/${ontology.info.symbol}`
 }
 
-export function packageTSIndexFile(ontology: Ontology) {
+export function packageTSIndexFile(ontology: Package) {
   return `${packageFolder(ontology)}/index.ts`
 }
 
-export function packageJSModuleIndexFile(ontology: Ontology) {
+export function packageJSModuleIndexFile(ontology: Package) {
   return `${packageFolder(ontology)}/index.js`
 }
 
-export function packagePackageJSON(ontology: Ontology) {
+export function packagePackageJSON(ontology: Package) {
   return `${packageFolder(ontology)}/package.json`
 }
