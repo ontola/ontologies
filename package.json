@@ -20,7 +20,7 @@
     "url": "git+https://github.com/ontola/ontologies.git"
   },
   "author": "Rescribet <thom@ontola.io>",
-  "license": "GPL-3.0-or-later",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/ontola/ontologies/issues"
   },
