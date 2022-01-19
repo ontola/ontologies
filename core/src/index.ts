@@ -55,7 +55,7 @@ export const createNS = (ns: string): Namespace =>
 let proxy: DataFactory<any> & any;
 if (typeof Proxy !== "undefined") {
   proxy = new Proxy<DataFactory>(globalFactory || ({} as DataFactory & any), {
-    ownKeys(): (string|number|symbol)[] {
+    ownKeys(): (string|symbol)[] {
       return globalFactory && Object.keys(globalFactory) || [];
     },
 

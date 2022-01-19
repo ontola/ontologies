@@ -510,10 +510,10 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
-"@types/n3@^1.10.3":
-  version "1.10.3"
-  resolved "https://registry.yarnpkg.com/@types/n3/-/n3-1.10.3.tgz#8f295db172a29c4daeced360c9460d4e0603cc9a"
-  integrity sha512-eVw/weCi6JPooPTz7Zgezmdw5ypNE57Ep+SlxFhT75F0nL9snsu1TIpAMAqtzHvi7VKJKJbnuOxAy9jgFCXDTA==
+"@types/n3@1.10.4":
+  version "1.10.4"
+  resolved "https://registry.npmjs.org/@types/n3/-/n3-1.10.4.tgz#fd23d15fd7e47cf6d199d1f44ac5d6930cc50905"
+  integrity sha512-FfRTwcbXcScVHuAjIASveRWL6Fi6fPALl1Ge8tMESYLqU7R42LJvtdBpUi+f9YK0oQPqIN+zFFgMDFJfLMx0bg==
   dependencies:
     "@types/node" "*"
     rdf-js "^4.0.2"
@@ -2698,10 +2698,18 @@ n-quads-parser@^2.1.1:
   dependencies:
     "@ontologies/core" ">=2.0.0"
 
-n3@^1.11.0, n3@^1.11.1:
+n3@^1.11.0:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/n3/-/n3-1.11.1.tgz#50015008afcb71e587ff9413f32e4a9bef09bc8b"
   integrity sha512-yeTeYoatabMs6IMv71dYSIfgf+s+4DpLrnvRv8CKGRLnAt1lfWcnb+mwP67PZKq7Wvh7MCIGXaflayPkn0WzHw==
+  dependencies:
+    queue-microtask "^1.1.2"
+    readable-stream "^3.6.0"
+
+n3@^1.12.2:
+  version "1.12.2"
+  resolved "https://registry.npmjs.org/n3/-/n3-1.12.2.tgz#3214c895b202ff57ebcaeb3e086c80649209158d"
+  integrity sha512-vY1HBEraMPWQFLEK6sn67DeGMqTuwXnlEYpZ8gTVukKQSz2f44d+t+ZcmwEt8c99FlVAbpmMb/435Q8t0OC+7w==
   dependencies:
     queue-microtask "^1.1.2"
     readable-stream "^3.6.0"
@@ -3194,7 +3202,7 @@ rdf-canonize@^3.0.0:
 
 rdf-js@^4.0.2:
   version "4.0.2"
-  resolved "https://registry.yarnpkg.com/rdf-js/-/rdf-js-4.0.2.tgz#f01510528bbfc6e004012b71a8a533896c4c4c10"
+  resolved "https://registry.npmjs.org/rdf-js/-/rdf-js-4.0.2.tgz#f01510528bbfc6e004012b71a8a533896c4c4c10"
   integrity sha512-ApvlFa/WsQh8LpPK/6hctQwG06Z9ztQQGWVtrcrf9L6+sejHNXLPOqL+w7q3hF+iL0C4sv3AX1PUtGkLNzyZ0Q==
   dependencies:
     "@rdfjs/types" "*"

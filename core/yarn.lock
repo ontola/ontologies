@@ -793,6 +793,13 @@
   resolved "https://registry.yarnpkg.com/@pika/types/-/types-0.8.1.tgz#ac24b9a73e6712d638cbc124b6b1d6a1ade51bb0"
   integrity sha512-xQNGUA9CAHmbI6tO9weu088pX3PbrRgYZs68FXAqkJXodNyEy7Ju8LU191MZOS6MZreA1PElPd2evsgQ6Wl/cA==
 
+"@rdfjs/types@*":
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/@rdfjs/types/-/types-1.0.1.tgz#92908a13bc88c71b349b332f3db19178282d6f4e"
+  integrity sha512-YxVkH0XrCNG3MWeZxfg596GFe+oorTVusmNxRP6ZHTsGczZ8AGvG3UchRNkg3Fy4MyysI7vBAA5YZbESL+VmHQ==
+  dependencies:
+    "@types/node" "*"
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz#ecdf48d532c58ea477acfcab80348424f8d0662f"
@@ -2907,6 +2914,13 @@ rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+rdf-js@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/rdf-js/-/rdf-js-4.0.2.tgz#f01510528bbfc6e004012b71a8a533896c4c4c10"
+  integrity sha512-ApvlFa/WsQh8LpPK/6hctQwG06Z9ztQQGWVtrcrf9L6+sejHNXLPOqL+w7q3hF+iL0C4sv3AX1PUtGkLNzyZ0Q==
+  dependencies:
+    "@rdfjs/types" "*"
+
 read-pkg-up@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/read-pkg-up/-/read-pkg-up-3.0.0.tgz#3ed496685dba0f8fe118d0691dc51f4a1ff96f07"
@@ -3577,10 +3591,10 @@ type-fest@^0.8.1:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
 
-typescript@^3.8.3:
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
-  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
+typescript@^4.4.3:
+  version "4.5.4"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.5.4.tgz#a17d3a0263bf5c8723b9c52f43c5084edf13c2e8"
+  integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"
