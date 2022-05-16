@@ -330,7 +330,7 @@ export class PlainFactory implements DataFactory {
   protected termToNQ(term: BlankNode | NamedNode | Literal): string {
     switch (term.termType) {
       case TermType.BlankNode:
-        return `_:${term.value}`
+        return term.value.startsWith('_:') ? term.value : `_:${term.value}`
       case TermType.NamedNode:
         return `<${term.value}>`
       case TermType.Literal:
